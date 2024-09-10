@@ -31,4 +31,4 @@
 
 ## Deployment
 
-This project is deployed on [Vercel](https://vercel.com/) and can be accessed at [https://react-dms-eight.vercel.app/](https://react-dms-eight.vercel.app/). The production environment also uses the `db.json` file for data.
+This project is deployed on [Vercel](https://vercel.com/) and can be accessed at [https://next-wms-psi.vercel.app/](https://next-wms-psi.vercel.app/). 
