@@ -1,3 +1,4 @@
+import { App } from "./_components/App";
 import "./globals.css";
 import { Commissioner } from "next/font/google";
 
@@ -12,7 +13,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={commissioner.className}>
-        <div className="bg-[#F5F8FA] w-[100%] h-[100vh]">{children}</div>
+        <div className="bg-[#F5F8FA] w-[100%] h-[100vh]">
+          <App>{children}</App>
+        </div>
       </body>
     </html>
   );
