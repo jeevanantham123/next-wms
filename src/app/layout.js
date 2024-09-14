@@ -1,12 +1,12 @@
 import { App } from "./_components/App";
 import "./globals.css";
-import { Commissioner } from "next/font/google";
+import { Inter } from "next/font/google";
 
-const commissioner = Commissioner({ subsets: ["latin"] });
+const commissioner = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "VMS",
-  description: "Ware house management system",
+  title: "WMS",
+  description: "Warehouse management system",
 };
 
 export default function RootLayout({ children }) {
