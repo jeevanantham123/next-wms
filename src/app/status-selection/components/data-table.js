@@ -36,9 +36,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { mockData } from "../constants";
+// import { mockData } from "../constants";
 
-const data = mockData;
+// const data = mockData;
 
 export const columns = [
   {
@@ -108,6 +108,21 @@ export const columns = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           LPN
+          <CaretSortIcon className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => <div className="lowercase">{row.getValue("lpn")}</div>,
+  },
+  {
+    accessorKey: "lpn", //FIXME pallet
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Pallet
           <CaretSortIcon className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -293,7 +308,7 @@ export const columns = [
   },
 ];
 
-export function DataTableDemo() {
+export function DataTableDemo({ data }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
