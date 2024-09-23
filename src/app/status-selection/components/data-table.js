@@ -115,7 +115,7 @@ export const columns = [
     cell: ({ row }) => <div className="lowercase">{row.getValue("lpn")}</div>,
   },
   {
-    accessorKey: "lpn", //FIXME pallet
+    accessorKey: "pallet", //FIXME pallet
     header: ({ column }) => {
       return (
         <Button
@@ -333,16 +333,42 @@ export function DataTableDemo({ data }) {
     },
   });
 
+  console.log(table.getSelectedRowModel().rows); //get full client-side selected rows
+
   return (
-    <div className="w-full">
-      <div className="flex items-center py-4">
+    <div className="w-full bg-white p-4 rounded-md overflow-hidden shadow-md">
+      <div className="flex gap-2 items-center py-4">
         <Input
           placeholder="Filter product..."
           value={table.getColumn("productId")?.getFilterValue() ?? ""}
           onChange={(event) =>
             table.getColumn("productId")?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          className="w-fit"
+        />
+        <Input
+          placeholder="Filter status..." // Current status
+          value={table.getColumn("currentStatus")?.getFilterValue() ?? ""}
+          onChange={(event) =>
+            table.getColumn("currentStatus")?.setFilterValue(event.target.value)
+          }
+          className="w-fit"
+        />
+        <Input
+          placeholder="Filter Pallet..."
+          value={table.getColumn("pallet")?.getFilterValue() ?? ""}
+          onChange={(event) =>
+            table.getColumn("pallet")?.setFilterValue(event.target.value)
+          }
+          className="w-fit"
+        />
+        <Input
+          placeholder="Filter Lot..."
+          value={table.getColumn("lot")?.getFilterValue() ?? ""}
+          onChange={(event) =>
+            table.getColumn("lot")?.setFilterValue(event.target.value)
+          }
+          className="w-fit"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

@@ -1,14 +1,22 @@
 /* eslint-disable @next/next/no-async-client-component */
-import React from "react";
-import { mockData } from "./constants";
-import { DataTableDemo } from "./components/data-table";
+"use client";
 
-export default async function StatusSelection() {
-  ("use server");
-  const apiData = await fetch("http:localhost:3000/api/soap-api", {
-    cache: "no-store",
-  });
-  const data = await apiData.json();
+import React, { useState, useEffect } from "react";
+import { DataTableDemo } from "./components/data-table";
+import { getStatusList } from "./actions";
+
+export default function StatusSelection() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getStatusList();
+      setData(data);
+    };
+    fetchData();
+  }, []);
+
+  if (!data) return null;
 
   return (
     <div className="container mx-auto p-10">

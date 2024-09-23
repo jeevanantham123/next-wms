@@ -23,10 +23,10 @@ export async function GET(req, res) {
           <inputXml xsi:type="xsd:string">
             {
               "GRP1": {
-                "ZITMREF": "BMS008", 
+                "ZITMREF": "", 
                 "ZLOT": "",
                 "ZLPN": "",
-                "ZLOC": "A2C11",
+                "ZLOC": "",
                 "ZFCY": "",
                 "ZCPY": ""
               }
@@ -86,6 +86,18 @@ export async function GET(req, res) {
 
     // Extract Table 2 Line Data
     const table2LineData = Array.isArray(linFields) ? linFields : [linFields];
+
+    // <FLD NAME="ZITMREF1" TYPE="Char">BMS008</FLD>
+    // 	<FLD NAME="ZLOT1" TYPE="Char"/>
+    // 	<FLD NAME="ZLPN1" TYPE="Char"/>
+    // 	<FLD NAME="ZLOC1" TYPE="Char">A2C11</FLD>
+    // 	<FLD NAME="ZFCY1" TYPE="Char">PT032</FLD>
+    // 	<FLD NAME="ZCPY1" TYPE="Char">PT30</FLD>
+    // 	<FLD NAME="ZQTY" TYPE="Integer">5</FLD>
+    // 	<FLD NAME="ZSTA" TYPE="Char">A</FLD>
+    // 	<FLD NAME="ZSUBLOT" TYPE="Char"/>
+    // 	<FLD NAME="ZPCU" TYPE="Char">UN</FLD>
+    // 	<FLD NAME="ZEXPDT" TYPE="Date">29991231</FLD>
 
     const formattedTable2LineData = table2LineData.map((lin) => ({
       id: lin.FLD.find((field) => field.$.NAME === "ID")?._ || "",
