@@ -28,6 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+
 import {
   Table,
   TableBody,
@@ -36,9 +37,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-// import { mockData } from "../constants";
-
-// const data = mockData;
+import UpdateDialog from "./update-dialog";
 
 export const columns = [
   {
@@ -370,6 +369,7 @@ export function DataTableDemo({ data }) {
           }
           className="w-fit"
         />
+        <UpdateDialog selectedRows={table.getSelectedRowModel().rows} />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
