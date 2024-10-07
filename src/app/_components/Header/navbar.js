@@ -1,10 +1,18 @@
+import { Button } from "@/components/ui/button";
+import { useSidebarStore } from "@/store/sidebar";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Navbar() {
   const [userMenu, setuserMenu] = useState(false);
   const [openNavMenu, setOpenNavMenu] = useState(false);
+  const setOpenSidebar = useSidebarStore((state) => state.setOpenSidebar);
+  const openSidebar = useSidebarStore((state) => state.openSidebar);
+
+  const router = useRouter();
+
   return (
-    <nav class="bg-gray-800">
+    <nav class="bg-gray-700 shadow-xl sticky top-0 z-[999]">
       <div class="mx-auto px-2 sm:px-6 lg:px-10">
         <div class="relative flex h-16 items-center justify-between">
           <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -50,40 +58,41 @@ export default function Navbar() {
             </button>
           </div>
           <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-            <div class="flex flex-shrink-0 items-center">
+            <div class="flex cursor-pointer flex-shrink-0 items-center">
               <img
-                class="h-10 w-auto bg-white rounded-full"
-                src="/icons/logo.jpg"
+                class="h-12 w-12 rounded-full"
+                src="/assets/SVStackLogo.png"
                 alt="Your Company"
+                onClick={() => setOpenSidebar(!openSidebar)}
               />
             </div>
-            <div class="hidden sm:ml-6 sm:block">
+            <div class="hidden">
               <div class="flex space-x-4">
-                <a
-                  href="/"
+                <Button
+                  onClick={() => router.push("/dashboard")}
                   class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
                   aria-current="page"
                 >
                   Dashboard
-                </a>
-                <a
-                  href="/status-selection"
+                </Button>
+                <Button
+                  onClick={() => router.push("/status-selection")}
                   class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
                 >
                   Status
-                </a>
-                <a
-                  href="/"
+                </Button>
+                <Button
+                  onClick={() => router.push("/status-selection")}
                   class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
                 >
                   Receipts
-                </a>
-                <a
-                  href="/"
+                </Button>
+                <Button
+                  onClick={() => router.push("/status-selection")}
                   class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
                 >
                   Inventory
-                </a>
+                </Button>
               </div>
             </div>
           </div>
@@ -173,7 +182,7 @@ export default function Navbar() {
       </div>
       {openNavMenu && (
         <div
-          class="sm:hidden absolute top-[52px] bg-gray-800 z-[999] w-full"
+          class="absolute top-[52px] bg-gray-800 z-[999] w-full"
           id="mobile-menu"
         >
           <div class="space-y-1 px-2 pb-3 pt-2">

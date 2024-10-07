@@ -353,14 +353,14 @@ export function DataTableDemo({ data }) {
           }
           className="w-fit"
         />
-        <Input
+        {/* <Input
           placeholder="Filter Pallet..."
           value={table.getColumn("pallet")?.getFilterValue() ?? ""}
           onChange={(event) =>
             table.getColumn("pallet")?.setFilterValue(event.target.value)
           }
           className="w-fit"
-        />
+        /> */}
         <Input
           placeholder="Filter Lot..."
           value={table.getColumn("lot")?.getFilterValue() ?? ""}
