@@ -28,6 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+
 import {
   Table,
   TableBody,
@@ -36,9 +37,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-// import { mockData } from "../constants";
-
-// const data = mockData;
+import UpdateDialog from "./update-dialog";
 
 export const columns = [
   {
@@ -354,14 +353,14 @@ export function DataTableDemo({ data }) {
           }
           className="w-fit"
         />
-        <Input
+        {/* <Input
           placeholder="Filter Pallet..."
           value={table.getColumn("pallet")?.getFilterValue() ?? ""}
           onChange={(event) =>
             table.getColumn("pallet")?.setFilterValue(event.target.value)
           }
           className="w-fit"
-        />
+        /> */}
         <Input
           placeholder="Filter Lot..."
           value={table.getColumn("lot")?.getFilterValue() ?? ""}
@@ -370,6 +369,7 @@ export function DataTableDemo({ data }) {
           }
           className="w-fit"
         />
+        <UpdateDialog selectedRows={table.getSelectedRowModel().rows} />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
