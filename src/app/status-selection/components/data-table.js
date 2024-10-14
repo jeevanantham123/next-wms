@@ -38,6 +38,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import UpdateDialog from "./update-dialog";
+import { Label } from "@/components/ui/label";
 
 export const columns = [
   {
@@ -336,7 +337,7 @@ export function DataTableDemo({ data }) {
 
   return (
     <div className="w-full bg-white p-4 rounded-md overflow-hidden shadow-md">
-      <div className="flex gap-2 items-center py-4">
+      <div className="flex gap-2 mb-12 items-center py-4">
         <Input
           placeholder="Filter product..."
           value={table.getColumn("productId")?.getFilterValue() ?? ""}
@@ -353,14 +354,14 @@ export function DataTableDemo({ data }) {
           }
           className="w-fit"
         />
-        {/* <Input
+        <Input
           placeholder="Filter Pallet..."
           value={table.getColumn("pallet")?.getFilterValue() ?? ""}
           onChange={(event) =>
             table.getColumn("pallet")?.setFilterValue(event.target.value)
           }
           className="w-fit"
-        /> */}
+        />
         <Input
           placeholder="Filter Lot..."
           value={table.getColumn("lot")?.getFilterValue() ?? ""}
@@ -369,7 +370,10 @@ export function DataTableDemo({ data }) {
           }
           className="w-fit"
         />
-        <UpdateDialog selectedRows={table.getSelectedRowModel().rows} />
+        <Button type="submit">Search</Button>
+        <Button type="submit">Submit</Button>
+
+        {/* <UpdateDialog selectedRows={table.getSelectedRowModel().rows} /> */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -396,6 +400,16 @@ export function DataTableDemo({ data }) {
               })}
           </DropdownMenuContent>
         </DropdownMenu>
+      </div>
+      <div className="flex w-full my-4 gap-4 justify-center items-center">
+        <Label>Destination Status</Label>
+        <Input
+          id="status"
+          value={""}
+          className="w-fit"
+          // onChange={(e) => setStatus(e.target.value)}
+        />
+        <Button type="submit">Apply to all</Button>
       </div>
       <div className="rounded-md border">
         <Table>
