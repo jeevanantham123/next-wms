@@ -14,6 +14,9 @@ export default function Sidebar() {
       } duration-500`}
     >
       <div className="flex flex-col w-full">
+        <div className="p-[16px] mt-[16px] text-[18px] text-white font-semibold">
+          Warehouse Management
+        </div>
         {SidebarItems?.map((item) => {
           return (
             <div key={item.title} className="mt-2">
