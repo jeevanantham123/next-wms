@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/table";
 import UpdateDialog from "./update-dialog";
 import { Label } from "@/components/ui/label";
+import { postDestinationChange } from "../actions";
 
 export const columns = [
   {
@@ -279,13 +280,15 @@ export const columns = [
 ];
 
 export function DataTableDemo({ data }) {
+  const [tableData, setTableData] = useState(data);
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
+  const [destinationStatus, setDestinationStatus] = useState("");
 
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -303,7 +306,23 @@ export function DataTableDemo({ data }) {
     },
   });
 
-  console.log(table.getSelectedRowModel().rows); //get full client-side selected rows
+  const handleDestinationStatusChange = () => {
+    let prevTableData = tableData;
+    prevTableData = prevTableData?.map((tableRow) => {
+      return { ...tableRow, destinationStatus: destinationStatus };
+    });
+    setTableData(prevTableData);
+    setDestinationStatus("");
+  };
+
+  const handleSubmit = async () => {
+    const flatArray = table
+      .getSelectedRowModel()
+      .rows.map((row) => row.original);
+    await postDestinationChange({ siteValue: "AU012", stockList: flatArray }) //FIXME: Sitevalue is constant
+      .then((data) => console.log(data))
+      .catch((err) => console.error(err));
+  };
 
   return (
     <div className="w-full bg-white p-4 rounded-md overflow-hidden shadow-md">
@@ -326,9 +345,9 @@ export function DataTableDemo({ data }) {
         />
         <Input
           placeholder="Filter Pallet..."
-          value={table.getColumn("pallet")?.getFilterValue() ?? ""}
+          value={table.getColumn("lot")?.getFilterValue() ?? ""}
           onChange={(event) =>
-            table.getColumn("pallet")?.setFilterValue(event.target.value)
+            table.getColumn("lot")?.setFilterValue(event.target.value)
           }
           className="w-fit"
         />
@@ -341,7 +360,6 @@ export function DataTableDemo({ data }) {
           className="w-fit"
         />
         <Button type="submit">Search</Button>
-        <Button type="submit">Submit</Button>
 
         {/* <UpdateDialog selectedRows={table.getSelectedRowModel().rows} /> */}
         <DropdownMenu>
@@ -374,12 +392,17 @@ export function DataTableDemo({ data }) {
       <div className="flex w-full my-4 gap-4 justify-center items-center">
         <Label>Destination Status</Label>
         <Input
-          id="status"
-          value={""}
+          placeholder="status"
+          value={destinationStatus}
           className="w-fit"
-          // onChange={(e) => setStatus(e.target.value)}
+          onChange={(e) => setDestinationStatus(e.target.value)}
         />
-        <Button type="submit">Apply to all</Button>
+        <Button type="submit" onClick={() => handleDestinationStatusChange()}>
+          Apply to all
+        </Button>
+        <Button type="submit" onClick={handleSubmit}>
+          Submit
+        </Button>
       </div>
       <div className="rounded-md border">
         <Table>
