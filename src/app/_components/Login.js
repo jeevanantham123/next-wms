@@ -1,6 +1,5 @@
 import { setAuth, useAuthStore } from "@/store/auth";
 import React from "react";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,6 +12,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { get, post } from "@/api";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { LoadingSpinner } from "@/components/ui/loader";
+import { Cross2Icon } from "@radix-ui/react-icons";
 
 export default function Login() {
   const {
@@ -23,27 +27,47 @@ export default function Login() {
     regPassword,
     authorizedUser,
   } = useAuthStore((state) => state);
-  console.log("Register", authorizedUser);
+
   const handleInputChange = (event) => {
     setAuth({ key: event.target.id, value: event.target.value });
   };
 
-  const handleLogin = (event) => {
-    console.log(email, password);
-    if (email === "admin@gmail.com" && password === "admin")
-      setAuth({ key: "authorizedUser", value: true });
+  const userLogin = useMutation({
+    mutationFn: (userDetails) => post("/auth/login", userDetails),
+    onSuccess: (data) => {
+      if (data.success) {
+        setAuth({ key: "authorizedUser", value: true });
+        toast("Login successful!", {
+          action: {
+            label: <Cross2Icon className="rounded-full" />,
+          },
+        });
+      }
+    },
+    onError: () => {
+      toast("Invalid credentials!", {
+        action: {
+          label: <Cross2Icon className="rounded-full" />,
+        },
+      });
+    },
+  });
+
+  const handleLogin = async (event) => {
+    userLogin.mutate({ email, password });
   };
 
   const handleRegister = (event) => {
     console.log(regUsername, regPassword, regEmail);
   };
+
   return (
     <div className="min-h-screen bg-white flex items-center justify-between">
       <div className="flex w-full justify-center items-center">
         <Tabs defaultValue="login" className="w-[400px]">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-1">
             <TabsTrigger value="login">Login</TabsTrigger>
-            <TabsTrigger value="register">Register</TabsTrigger>
+            {/* <TabsTrigger value="register">Register</TabsTrigger> */}
           </TabsList>
           <TabsContent value="login">
             <Card>
@@ -78,7 +102,13 @@ export default function Login() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button onClick={handleLogin}>Login</Button>
+                <Button
+                  className="min-w-32"
+                  disabled={userLogin.isPending}
+                  onClick={handleLogin}
+                >
+                  {userLogin.isPending ? <LoadingSpinner /> : "Login"}
+                </Button>
               </CardFooter>
             </Card>
           </TabsContent>

@@ -7,6 +7,7 @@ import { useAuthStore } from "@/store/auth";
 import Login from "../Login";
 import Sidebar from "../Sidebar";
 import { useSidebarStore } from "@/store/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ export const App = ({ children }) => {
       ) : (
         <Login />
       )}
+      <Toaster />
       <ReactQueryDevtools />
     </QueryClientProvider>
   );
