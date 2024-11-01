@@ -8,28 +8,44 @@ import Login from "../Login";
 import Sidebar from "../Sidebar";
 import { useSidebarStore } from "@/store/sidebar";
 import { Toaster } from "@/components/ui/sonner";
+import { usePathname } from "next/navigation";
+import AdminSidebar from "../Sidebar/AdminSidebar";
 
 const queryClient = new QueryClient();
 
 export const App = ({ children }) => {
   const authorizedUser = useAuthStore((state) => state.authorizedUser);
   const openSidebar = useSidebarStore((state) => state.openSidebar);
+  const pathName = usePathname();
 
   return (
     <QueryClientProvider client={queryClient}>
       {authorizedUser ? (
         <>
           <Navbar />
-          <div className="sm:flex">
-            <Sidebar />
-            <div
-              className={`${
-                openSidebar ? "sm:w-[85%] sm:ml-[15%]" : "sm:w-[100%]"
-              } duration-500`}
-            >
-              {children}
+          {pathName?.includes("admin") ? (
+            <div className="sm:flex">
+              <AdminSidebar />
+              <div
+                className={`${
+                  openSidebar ? "sm:w-[85%] sm:ml-[15%]" : "sm:w-[100%]"
+                } duration-500`}
+              >
+                {children}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="sm:flex">
+              <Sidebar />
+              <div
+                className={`${
+                  openSidebar ? "sm:w-[85%] sm:ml-[15%]" : "sm:w-[100%]"
+                } duration-500`}
+              >
+                {children}
+              </div>
+            </div>
+          )}
         </>
       ) : (
         <Login />

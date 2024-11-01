@@ -31,7 +31,8 @@ const apiClient = async (
 
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.message || "An error occurred");
+    console.log(errorData);
+    throw new Error(errorData || "An error occurred");
   }
 
   return response.json();

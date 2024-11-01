@@ -24,18 +24,17 @@ export default async function middleware(request) {
       audience: "urn:yourapp:audience",
     });
 
-    console.log("secret", payload, protectedHeader);
+    const response = NextResponse.next();
+    response.headers.set("x-user-email", payload.email);
+    response.headers.set("x-user-id", payload.id);
 
-    // Attach user info to the request
-    request.userData = payload;
+    return response;
 
     // Add custom logic to check roles or permissions if needed
     // e.g., if route requires admin privileges:
     // if (decoded.role !== 'admin') {
     //   return NextResponse.json({ success: false, message: "Forbidden" }, { status: 403 });
     // }
-
-    return NextResponse.next();
   } catch (error) {
     console.log("Middleware error", error);
     return NextResponse.json(
@@ -45,7 +44,7 @@ export default async function middleware(request) {
   }
 }
 
-// Apply middleware only to specific paths
+// // Apply middleware only to specific paths
 export const config = {
   matcher: ["/api/admin/:path*"], // Apply middleware to all /api/users routes
 };

@@ -20,11 +20,12 @@ export async function GET() {
 
 export async function POST(request) {
   try {
-    const { email, password, permissions } = await request.json();
+    const { email, password, userName, permissions } = await request.json();
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await prisma.users.create({
       data: {
         email,
+        userName,
         password: hashedPassword,
         permissions: {
           connect: permissions.map((id) => ({ id })),

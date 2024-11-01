@@ -13,12 +13,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { get, post } from "@/api";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { LoadingSpinner } from "@/components/ui/loader";
 import { Cross2Icon } from "@radix-ui/react-icons";
 
 export default function Login() {
+  const { data, isError, isLoading } = useQuery({
+    queryKey: ["check-auth"],
+    queryFn: () => get("/admin/users/check-auth"),
+  });
+
   const {
     regUsername,
     password,
@@ -61,13 +66,22 @@ export default function Login() {
     console.log(regUsername, regPassword, regEmail);
   };
 
+  if (isLoading)
+    return (
+      <div className="flex w-full h-screen justify-center items-center">
+        <LoadingSpinner />
+      </div>
+    );
+
+  if (data?.success) setAuth({ key: "authorizedUser", value: true });
+
   return (
     <div className="min-h-screen bg-white flex items-center justify-between">
       <div className="flex w-full justify-center items-center">
         <Tabs defaultValue="login" className="w-[400px]">
-          <TabsList className="grid w-full grid-cols-1">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="login">Login</TabsTrigger>
-            {/* <TabsTrigger value="register">Register</TabsTrigger> */}
+            <TabsTrigger value="register">Register</TabsTrigger>
           </TabsList>
           <TabsContent value="login">
             <Card>
