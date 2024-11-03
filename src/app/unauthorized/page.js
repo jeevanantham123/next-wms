@@ -1,14 +1,23 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/sonner";
 import { useAuthStore } from "@/store/auth";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
+import { toast } from "sonner";
 
 export default function Unauthorized() {
   const router = useRouter();
   const userPermissions = useAuthStore((state) => state.userPermissions);
-  console.log(userPermissions);
+
+  useEffect(() => {
+    toast.error("User is not authorized");
+    if (userPermissions.includes("admin")) router.push("/admin/dashboard");
+    if (userPermissions.includes("wms")) router.push("/wms/dashboard");
+    if (userPermissions.includes("auditing"))
+      router.push("/auditing/dashboard");
+  }, []);
 
   const handleGoback = () => {
     if (userPermissions.includes("admin")) router.push("/admin/dashboard");
