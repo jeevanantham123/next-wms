@@ -3,7 +3,7 @@ import React from "react";
 import { SidebarItems } from "./items";
 import { useRouter } from "next/navigation";
 
-export default function AdminSidebar() {
+export default function AuditingSidebar() {
   const openSidebar = useSidebarStore((state) => state.openSidebar);
   const router = useRouter();
 
@@ -15,7 +15,7 @@ export default function AdminSidebar() {
     >
       <div className="flex flex-col w-full">
         <div className="p-[12px] mt-[16px] text-[16px] text-white font-semibold">
-          Admin Panel
+          Auditing Management
         </div>
         {SidebarItems?.map((item) => {
           return (

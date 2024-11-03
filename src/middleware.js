@@ -27,12 +27,13 @@ export default async function middleware(request) {
     const response = NextResponse.next();
     response.headers.set("x-user-email", payload.email);
     response.headers.set("x-user-id", payload.id);
+    response.headers.set("x-user-permissions", payload.permissions);
 
     return response;
 
     // Add custom logic to check roles or permissions if needed
     // e.g., if route requires admin privileges:
-    // if (decoded.role !== 'admin') {
+    // if (decoded.role !== 'admin') {user
     //   return NextResponse.json({ success: false, message: "Forbidden" }, { status: 403 });
     // }
   } catch (error) {

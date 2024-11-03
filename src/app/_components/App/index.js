@@ -15,37 +15,13 @@ const queryClient = new QueryClient();
 
 export const App = ({ children }) => {
   const authorizedUser = useAuthStore((state) => state.authorizedUser);
-  const openSidebar = useSidebarStore((state) => state.openSidebar);
-  const pathName = usePathname();
 
   return (
     <QueryClientProvider client={queryClient}>
       {authorizedUser ? (
         <>
           <Navbar />
-          {pathName?.includes("admin") ? (
-            <div className="sm:flex">
-              <AdminSidebar />
-              <div
-                className={`${
-                  openSidebar ? "sm:w-[85%] sm:ml-[15%]" : "sm:w-[100%]"
-                } duration-500`}
-              >
-                {children}
-              </div>
-            </div>
-          ) : (
-            <div className="sm:flex">
-              <Sidebar />
-              <div
-                className={`${
-                  openSidebar ? "sm:w-[85%] sm:ml-[15%]" : "sm:w-[100%]"
-                } duration-500`}
-              >
-                {children}
-              </div>
-            </div>
-          )}
+          {children}
         </>
       ) : (
         <Login />

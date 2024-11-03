@@ -45,6 +45,11 @@ import { put } from "@/api";
 import { toast } from "sonner";
 import { useUserList } from "./store";
 import { LoadingSpinner } from "@/components/ui/loader";
+import AddUserModal from "./create-user";
+import AddPermissionModal from "./create-permission";
+import ChangePasswordModal from "./change-password";
+import DeleteUserModal from "./delete-user";
+import ChangePermissionModal from "./change-permission";
 
 const ToggleStatus = ({ row, refetch }) => {
   const statusChange = useMutation({
@@ -104,8 +109,18 @@ export function UserDatatable({ data, refetch }) {
     {
       accessorKey: "email",
       header: "Email",
+      cell: ({ row }) => <div className="">{row.getValue("email")}</div>,
+    },
+    {
+      accessorKey: "permissions",
+      header: "Permissions",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("email")}</div>
+        <div className="">
+          {row
+            .getValue("permissions")
+            ?.map((permission) => permission.name)
+            ?.join(",")}
+        </div>
       ),
     },
     {
@@ -119,8 +134,6 @@ export function UserDatatable({ data, refetch }) {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
-        const payment = row.original;
-
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -131,14 +144,15 @@ export function UserDatatable({ data, refetch }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(payment.id)}
-              >
-                Copy payment ID
+              <DropdownMenuItem onClick={(e) => e.preventDefault()}>
+                <ChangePermissionModal refetch={refetch} row={row.original} />
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>View user</DropdownMenuItem>
-              <DropdownMenuItem>View details</DropdownMenuItem>
+              <DropdownMenuItem onClick={(e) => e.preventDefault()}>
+                <ChangePasswordModal refetch={refetch} row={row.original} />
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={(e) => e.preventDefault()}>
+                <DeleteUserModal refetch={refetch} row={row.original} />
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -167,7 +181,7 @@ export function UserDatatable({ data, refetch }) {
 
   return (
     <div className="w-full bg-white p-4 rounded-md overflow-hidden shadow-md">
-      <div className="flex gap-2 mb-12 items-center py-4">
+      <div className="flex justify-between mb-12 items-center py-4">
         <Input
           placeholder="Filter user..."
           value={table.getColumn("email")?.getFilterValue() ?? ""}
@@ -176,6 +190,10 @@ export function UserDatatable({ data, refetch }) {
           }
           className="w-fit"
         />
+        <div className="flex gap-4">
+          <AddPermissionModal refetch={refetch} />
+          <AddUserModal refetch={refetch} />
+        </div>
       </div>
 
       <div className="rounded-md border">

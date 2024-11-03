@@ -1,13 +1,22 @@
 import { Button } from "@/components/ui/button";
+import { useAuthStore } from "@/store/auth";
 import { useSidebarStore } from "@/store/sidebar";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { userLogout } from "./actions";
 
 export default function Navbar() {
   const [userMenu, setuserMenu] = useState(false);
   const [openNavMenu, setOpenNavMenu] = useState(false);
   const setOpenSidebar = useSidebarStore((state) => state.setOpenSidebar);
   const openSidebar = useSidebarStore((state) => state.openSidebar);
+  const handleSignOut = async () => {
+    await userLogout();
+    useAuthStore.setState({
+      authorizedUser: false,
+      userPermissions: [],
+    });
+  };
 
   const router = useRouter();
 
@@ -65,6 +74,17 @@ export default function Navbar() {
                 alt="Your Company"
                 onClick={() => setOpenSidebar(!openSidebar)}
               />
+            </div>
+            <div className="flex gap-2 items-center ml-6">
+              <Button onClick={() => router.push("/wms/dashboard")}>
+                Warehouse Management
+              </Button>
+              <Button onClick={() => router.push("/auditing/dashboard")}>
+                Auditing
+              </Button>
+              <Button onClick={() => router.push("/admin/dashboard")}>
+                Authentication
+              </Button>
             </div>
             <div className="hidden">
               <div className="flex space-x-4">
@@ -165,15 +185,17 @@ export default function Navbar() {
                   >
                     Settings
                   </a>
-                  <a
-                    href="#"
+                  <div
                     className="block px-4 py-2 text-sm text-gray-700"
                     role="menuitem"
                     tabindex="-1"
                     id="user-menu-item-2"
+                    onClick={() => {
+                      handleSignOut();
+                    }}
                   >
                     Sign out
-                  </a>
+                  </div>
                 </div>
               )}
             </div>

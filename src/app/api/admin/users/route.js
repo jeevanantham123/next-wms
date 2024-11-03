@@ -8,7 +8,15 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    const users = await prisma.users.findMany();
+    const users = await prisma.users.findMany({
+      include: {
+        permissions: {
+          select: {
+            name: true, // Only include the 'name' field from UserPermissions
+          },
+        },
+      },
+    });
     return NextResponse.json({ success: true, data: users }, { status: 200 });
   } catch (error) {
     return NextResponse.json(

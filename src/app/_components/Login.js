@@ -41,7 +41,12 @@ export default function Login() {
     mutationFn: (userDetails) => post("/auth/login", userDetails),
     onSuccess: (data) => {
       if (data.success) {
-        setAuth({ key: "authorizedUser", value: true });
+        useAuthStore.setState({
+          authorizedUser: true,
+          userPermissions: data?.data?.permissions?.map(
+            (permission) => permission.name
+          ),
+        });
         toast("Login successful!", {
           action: {
             label: <Cross2Icon className="rounded-full" />,
@@ -73,7 +78,13 @@ export default function Login() {
       </div>
     );
 
-  if (data?.success) setAuth({ key: "authorizedUser", value: true });
+  if (data?.success) {
+    console.log("data", data?.data?.permissions?.split(","));
+    useAuthStore.setState({
+      authorizedUser: true,
+      userPermissions: data?.data?.permissions?.split(","),
+    });
+  }
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-between">

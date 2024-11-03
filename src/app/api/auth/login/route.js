@@ -43,7 +43,7 @@ export async function POST(request) {
 
     // Set token as HttpOnly cookie
     return NextResponse.json(
-      { success: true, message: "Login successful" },
+      { success: true, data: user, message: "Login successful" },
       {
         headers: {
           "Set-Cookie": `token=${token}; HttpOnly; Path=/; Max-Age=${3600}`,
