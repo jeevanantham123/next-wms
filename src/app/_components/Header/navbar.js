@@ -10,15 +10,16 @@ export default function Navbar() {
   const [openNavMenu, setOpenNavMenu] = useState(false);
   const setOpenSidebar = useSidebarStore((state) => state.setOpenSidebar);
   const openSidebar = useSidebarStore((state) => state.openSidebar);
+  const router = useRouter();
+
   const handleSignOut = async () => {
     await userLogout();
     useAuthStore.setState({
       authorizedUser: false,
       userPermissions: [],
     });
+    router.refresh();
   };
-
-  const router = useRouter();
 
   return (
     <nav className="bg-gray-700 shadow-xl sticky top-0 z-[999]">
@@ -186,7 +187,7 @@ export default function Navbar() {
                     Settings
                   </a>
                   <div
-                    className="block px-4 py-2 text-sm text-gray-700"
+                    className="block cursor-pointer px-4 py-2 text-sm text-gray-700"
                     role="menuitem"
                     tabindex="-1"
                     id="user-menu-item-2"
