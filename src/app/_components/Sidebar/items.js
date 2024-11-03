@@ -8,17 +8,17 @@ import {
 export const SidebarItems = [
   {
     title: "Home",
-    path: "/",
+    path: "/wms/dashboard",
     icon: <HomeIcon />,
   },
   {
     title: "Status Change",
-    path: "/status-selection",
+    path: "/wms/status-selection",
     icon: <TokensIcon />,
   },
   {
     title: "Receipts",
-    path: "/receipts",
+    path: "/wms/receipts",
     icon: <ReaderIcon />,
   },
   {

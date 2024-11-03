@@ -2,11 +2,12 @@ import { create } from "zustand";
 
 export const useAuthStore = create((set) => ({
   authorizedUser: null,
-  regUsername: null,
-  regPassword: null,
-  regEmail: null,
-  password: null,
-  email: null,
+  userPermissions: [],
+  regUsername: "",
+  regPassword: "",
+  regEmail: "",
+  password: "",
+  email: "",
 }));
 
 export const setAuth = ({ key, value }) =>
