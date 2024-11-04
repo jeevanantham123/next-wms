@@ -11,6 +11,7 @@ export default function Navbar() {
   const setOpenSidebar = useSidebarStore((state) => state.setOpenSidebar);
   const openSidebar = useSidebarStore((state) => state.openSidebar);
   const router = useRouter();
+  const[activeButton,setActiveButton] = useState(null);
 
   const handleSignOut = async () => {
     await userLogout();
@@ -21,10 +22,15 @@ export default function Navbar() {
     router.refresh();
   };
 
+  const handleButtonClick = (path, buttonName) => {
+    setActiveButton(buttonName); // Set the active button
+    router.push(path);
+  };
+
   return (
     <nav className="bg-gray-700 shadow-xl sticky top-0 z-[999]">
       <div className="mx-auto px-2 sm:px-6 lg:px-10">
-        <div className="relative flex h-16 items-center justify-between">
+        <div className="relative flex h-16 items-center justify-between"> 
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
             <button
               type="button"
@@ -76,16 +82,44 @@ export default function Navbar() {
                 onClick={() => setOpenSidebar(!openSidebar)}
               />
             </div>
-            <div className="flex gap-2 items-center ml-6">
-              <Button onClick={() => router.push("/wms/dashboard")}>
-                Warehouse Management
-              </Button>
-              <Button onClick={() => router.push("/auditing/dashboard")}>
-                Auditing
+             <div className="flex gap-2 items-center mx-auto">
+             {/* <Button onClick={() => router.push("/wms/dashboard")}>
+                WMS
+              </Button> */}
+
+            <button
+              onClick={() => handleButtonClick("/wms/dashboard", "WMS")}
+              className={`inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors 
+              ${activeButton === "WMS" ? "bg-white text-gray-600 shadow-md" : "bg-primary text-primary-foreground shadow hover:bg-primary/90"}`}
+               >
+              WMS
+              </button>
+
+
+              
+               {/* <Button onClick={() => router.push("/auditing/dashboard")}>
+                Audit Info
               </Button>
               <Button onClick={() => router.push("/admin/dashboard")}>
                 Authentication
-              </Button>
+              </Button> */}
+
+              <button
+                onClick={() => handleButtonClick("/auditing/dashboard", "Audit Info")}
+                className={`inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors 
+                  ${activeButton === "Audit Info" ? "bg-white text-gray-600 shadow-md" : "bg-primary text-primary-foreground shadow hover:bg-primary/90"}`}
+              >
+                Audit Info
+              </button>   
+
+              <button
+                onClick={() => handleButtonClick("/admin/dashboard", "Authentication")}
+                className={`inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors 
+                  ${activeButton === "Authentication" ? "bg-white text-gray-600 shadow-md" : "bg-primary text-primary-foreground shadow hover:bg-primary/90"}`}
+              >
+                Authentication
+              </button>
+
             </div>
             <div className="hidden">
               <div className="flex space-x-4">

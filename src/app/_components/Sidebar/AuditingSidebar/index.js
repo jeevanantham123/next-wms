@@ -14,7 +14,7 @@ export default function AuditingSidebar() {
       } duration-500`}
     >
       <div className="flex flex-col w-full">
-        <div className="p-[12px] mt-[16px] text-[16px] text-white font-semibold">
+        <div className="p-[12px] mt-[16px] text-[16px] text-white font-semibold bg-gray-600 rounded">
           Auditing Management
         </div>
         {SidebarItems?.map((item) => {
@@ -22,7 +22,7 @@ export default function AuditingSidebar() {
             <div key={item.title} className="mt-2">
               <div
                 onClick={() => router.push(item.path)}
-                className="text-[14px] p-[16px] cursor-pointer hover:bg-white/20 hover:font-semibold w-full flex  items-center gap-4 font-medium text-white "
+                className="text-[14px] p-[16px] cursor-pointer hover:bg-white/20 hover:font-semibold w-full flex  items-center gap-2 font-medium text-white "
               >
                 {item.icon}
                 {item.title}
