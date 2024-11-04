@@ -50,6 +50,7 @@ import AddPermissionModal from "./create-permission";
 import ChangePasswordModal from "./change-password";
 import DeleteUserModal from "./delete-user";
 import ChangePermissionModal from "./change-permission";
+import { useRouter } from "next/navigation";
 
 const ToggleStatus = ({ row, refetch }) => {
   const statusChange = useMutation({
@@ -97,6 +98,7 @@ export function UserDatatable({ data, refetch }) {
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const [destinationStatus, setDestinationStatus] = useState("");
+  const router = useRouter();
 
   const columns = [
     {
@@ -134,6 +136,7 @@ export function UserDatatable({ data, refetch }) {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
+        console.log(row.original.id,'row')
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -149,6 +152,9 @@ export function UserDatatable({ data, refetch }) {
               </DropdownMenuItem>
               <DropdownMenuItem onClick={(e) => e.preventDefault()}>
                 <ChangePasswordModal refetch={refetch} row={row.original} />
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push(`/admin/user/${row.original.id}`)}>
+                Edit User
               </DropdownMenuItem>
               <DropdownMenuItem onClick={(e) => e.preventDefault()}>
                 <DeleteUserModal refetch={refetch} row={row.original} />
