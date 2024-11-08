@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/auth";
 import { useSidebarStore } from "@/store/sidebar";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { userLogout } from "./actions";
 
@@ -11,6 +11,7 @@ export default function Navbar() {
   const setOpenSidebar = useSidebarStore((state) => state.setOpenSidebar);
   const openSidebar = useSidebarStore((state) => state.openSidebar);
   const router = useRouter();
+  const pathName = usePathname();
 
   const handleSignOut = async () => {
     await userLogout();
@@ -22,7 +23,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-gray-700 shadow-xl sticky top-0 z-[999]">
+    <nav className="bg-white shadow-xl sticky top-0 z-[9999]">
       <div className="mx-auto px-2 sm:px-6 lg:px-10">
         <div className="relative flex h-16 items-center justify-between">
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -67,26 +68,38 @@ export default function Navbar() {
               </svg>
             </button>
           </div>
-          <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-            <div className="flex cursor-pointer flex-shrink-0 items-center">
+          <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-between">
+            <div className="flex cursor-pointer w-full flex-shrink-0 items-center justify-between">
               <img
                 className="h-12 w-12 rounded-full"
                 src="/assets/SVStackLogo.png"
                 alt="Your Company"
                 onClick={() => setOpenSidebar(!openSidebar)}
               />
+              <div className="flex flex-1 w-full gap-2 justify-center items-center ml-6">
+                <Button
+                  variant={pathName.includes("wms") ? "default" : "outline"}
+                  onClick={() => router.push("/wms/dashboard")}
+                >
+                  Warehouse Management
+                </Button>
+                <Button
+                  variant={
+                    pathName.includes("auditing") ? "default" : "outline"
+                  }
+                  onClick={() => router.push("/auditing/dashboard")}
+                >
+                  Auditing
+                </Button>
+                <Button
+                  variant={pathName.includes("admin") ? "default" : "outline"}
+                  onClick={() => router.push("/admin/dashboard")}
+                >
+                  Authentication
+                </Button>
+              </div>
             </div>
-            <div className="flex gap-2 items-center ml-6">
-              <Button onClick={() => router.push("/wms/dashboard")}>
-                Warehouse Management
-              </Button>
-              <Button onClick={() => router.push("/auditing/dashboard")}>
-                Auditing
-              </Button>
-              <Button onClick={() => router.push("/admin/dashboard")}>
-                Authentication
-              </Button>
-            </div>
+
             <div className="hidden">
               <div className="flex space-x-4">
                 <Button
