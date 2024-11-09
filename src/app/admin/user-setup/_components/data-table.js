@@ -1,13 +1,7 @@
 "use client";
+import { useState } from "react";
 
-import { useEffect, useState } from "react";
-
-import {
-  CaretSortIcon,
-  ChevronDownIcon,
-  Cross2Icon,
-  DotsHorizontalIcon,
-} from "@radix-ui/react-icons";
+import { Cross2Icon, DotsHorizontalIcon } from "@radix-ui/react-icons";
 import {
   flexRender,
   getCoreRowModel,
@@ -18,14 +12,11 @@ import {
 } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -38,18 +29,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { put } from "@/api";
 import { toast } from "sonner";
-import { useUserList } from "./store";
-import { LoadingSpinner } from "@/components/ui/loader";
 import AddUserModal from "./create-user";
 import AddPermissionModal from "./create-permission";
 import ChangePasswordModal from "./change-password";
 import DeleteUserModal from "./delete-user";
 import ChangePermissionModal from "./change-permission";
+import { useRouter } from "next/navigation";
 
 const ToggleStatus = ({ row, refetch }) => {
   const statusChange = useMutation({
@@ -97,6 +86,7 @@ export function UserDatatable({ data, refetch }) {
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const [destinationStatus, setDestinationStatus] = useState("");
+  const router = useRouter();
 
   const columns = [
     {
@@ -134,21 +124,29 @@ export function UserDatatable({ data, refetch }) {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
+        console.log(row.original.id, "row");
         return (
-          <DropdownMenu>
+          <DropdownMenu className="bg-white">
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
                 <span className="sr-only">Open menu</span>
                 <DotsHorizontalIcon className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="bg-white">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem onClick={(e) => e.preventDefault()}>
                 <ChangePermissionModal refetch={refetch} row={row.original} />
               </DropdownMenuItem>
               <DropdownMenuItem onClick={(e) => e.preventDefault()}>
                 <ChangePasswordModal refetch={refetch} row={row.original} />
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                  router.push(`/admin/user-setup/${row.original.id}`)
+                }
+              >
+                Edit User
               </DropdownMenuItem>
               <DropdownMenuItem onClick={(e) => e.preventDefault()}>
                 <DeleteUserModal refetch={refetch} row={row.original} />

@@ -1,9 +1,65 @@
-import { AvatarIcon, HomeIcon } from "@radix-ui/react-icons";
+import {
+  AvatarIcon,
+  BellIcon,
+  ButtonIcon,
+  ColumnsIcon,
+  Component1Icon,
+  Component2Icon,
+  HamburgerMenuIcon,
+  LockClosedIcon,
+  RowsIcon,
+  TokensIcon,
+} from "@radix-ui/react-icons";
 
 export const SidebarItems = [
   {
     title: "Dashboard",
     path: "/auditing/dashboard",
-    icon: <HomeIcon />,
+    icon: <TokensIcon />,
+  },
+  {
+    title: "User",
+    path: "/auditing/user",
+    icon: <AvatarIcon />,
+  },
+  {
+    title: "Functional profile",
+    path: "/auditing/functional-profile",
+    icon: <Component1Icon />,
+  },
+  {
+    title: "Functional authorization",
+    path: "/auditing/functional-authorization",
+    icon: <Component2Icon />,
+  },
+  {
+    title: "Master data",
+    path: "/auditing/master-data",
+    icon: <ColumnsIcon />,
+  },
+  {
+    title: "Transactional data",
+    path: "/auditing/transactional-data",
+    icon: <ButtonIcon />,
+  },
+  {
+    title: "All",
+    path: "/auditing/all",
+    icon: <RowsIcon />,
+  },
+  {
+    title: "Login history",
+    path: "/auditing/login-history",
+    icon: <LockClosedIcon />,
+  },
+  {
+    title: "DB history",
+    path: "/auditing/db-history",
+    icon: <HamburgerMenuIcon />,
+  },
+  {
+    title: "Notifications",
+    path: "/auditing/notifications",
+    icon: <BellIcon />,
   },
 ];
