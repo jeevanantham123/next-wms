@@ -49,16 +49,16 @@ export function ModuleComboBox() {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[230px] text-[14px] h-[42px] mb-[12px] mt-[20px] ml-[12px] justify-between border border-theme"
+          className="w-[90%] mx-auto text-[12px] h-[42px] mb-[12px] mt-[20px] justify-between border border-theme"
         >
           {pathName
             ? frameworks.find((framework) => pathName.includes(framework.value))
                 ?.label
             : "Select Module..."}
-          <ChevronsUpDown className="opacity-80 h-[20px]" />
+          <ChevronsUpDown className="opacity-80 min-h-[20px] h-[20px] min-w-[12px] w-[12px] ml-[3px]" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[230px] p-0 bg-white z-[999]">
+      <PopoverContent className="w-[90%] p-0 bg-white z-[999] mx-auto">
         <Command>
           <CommandList>
             <CommandGroup>

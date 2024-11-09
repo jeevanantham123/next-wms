@@ -11,7 +11,7 @@ export default function AdminSidebar() {
 
   return (
     <div
-      className={`w-[15%] hidden sm:flex shadow-2xl h-screen z-[999] max-h-screen fixed  top-[64px] justify-start items-start bg-white ${
+      className={`w-[15%] hidden sm:flex shadow-2xl h-screen z-[999] max-h-screen fixed top-[64px] justify-start items-start bg-white ${
         openSidebar ? "left-0 " : "-left-[15%]"
       } duration-500`}
     >

@@ -8,6 +8,17 @@ module.exports = {
   ],
   theme: {
     extend: {
+      container: {
+        center: true, // Center the container
+        padding: "1rem", // Default padding for all screen sizes
+        screens: {
+          sm: "100%", // Full width on small screens
+          md: "728px", // Medium screen
+          lg: "984px", // Large screen
+          xl: "1360px", // Extra large screen
+          "2xl": "1440px", // 2X large screen
+        },
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
