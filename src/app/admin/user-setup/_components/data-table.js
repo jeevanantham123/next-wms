@@ -142,7 +142,9 @@ export function UserDatatable({ data, refetch }) {
                 <ChangePasswordModal refetch={refetch} row={row.original} />
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => router.push(`/admin/user/${row.original.id}`)}
+                onClick={() =>
+                  router.push(`/admin/user-setup/${row.original.id}`)
+                }
               >
                 Edit User
               </DropdownMenuItem>

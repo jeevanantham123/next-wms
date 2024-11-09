@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import DragDropComponent from "./DragAndDrop";
-import Image from "next/image";
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -370,14 +369,10 @@ const UserEditForm = ({ userDetails }) => {
             </div>
             <div className="flex items-center mr-20 flex-col">
               <div>
-                <Image
+                <img
                   src="https://picsum.photos/200/200"
                   className="rounded-full"
                   alt="avatar"
-                  width={200}
-                  loader={<h1>Loading</h1>}
-                  height={200}
-                  placeholder="blur"
                 />
               </div>
               <Button variant="outline" className="mt-[14px]">

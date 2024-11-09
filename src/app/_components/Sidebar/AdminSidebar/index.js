@@ -32,7 +32,7 @@ export default function AdminSidebar() {
                     "text-[12px] h-[48px] pl-[12px] w-full flex items-center gap-4 font-medium text-black",
                     {
                       "rounded-md bg-theme text-white font-semibold":
-                        item.path === pathName,
+                        item.path === pathName || pathName.includes(item.path),
                     }
                   )}
                 >
