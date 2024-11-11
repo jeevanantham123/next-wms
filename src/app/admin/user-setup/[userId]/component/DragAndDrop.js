@@ -41,7 +41,7 @@ const DragDropComponent = ({ dropItems, title }) => {
   return (
     <div className="flex space-x-8">
       {/* Left Side: List of Items */}
-      <div className="w-[300px] p-4 border rounded-lg bg-gray-50">
+      <div className="w-[250px] p-4 border rounded-lg bg-gray-50">
         <h3 className="text-lg font-semibold mb-4">{title} available</h3>
         <div className="space-y-2">
           {items.map((item) => (
@@ -63,7 +63,7 @@ const DragDropComponent = ({ dropItems, title }) => {
 
       {/* Right Side: Drop Zone */}
       <div
-        className="w-[300px] p-4 border-dashed border-2 border-purple-500 rounded-lg"
+        className="w-[250px] p-4 border-dashed border-2 border-purple-500 rounded-lg"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
       >

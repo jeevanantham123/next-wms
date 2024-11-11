@@ -13,6 +13,7 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch";
 import DragDropComponent from "./DragAndDrop";
 
@@ -180,6 +181,7 @@ const UserEditForm = ({ userDetails }) => {
       ],
     },
   ]);
+  const [userrole,setUserRole] = useState('')
   const [useractive, setUserActive] = useState(true);
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -221,9 +223,9 @@ const UserEditForm = ({ userDetails }) => {
       prevUserCompany.map((userComp) =>
         userComp.name === companyname
           ? {
-              ...userComp,
-              sites: userComp.sites.filter((site) => site !== sitename),
-            }
+            ...userComp,
+            sites: userComp.sites.filter((site) => site !== sitename),
+          }
           : userComp
       )
     );
@@ -247,9 +249,9 @@ const UserEditForm = ({ userDetails }) => {
       prevUserModules.map((module) =>
         module.name === moduleName
           ? {
-              ...module,
-              transactions: [...module.transactions, transactionName],
-            }
+            ...module,
+            transactions: [...module.transactions, transactionName],
+          }
           : module
       )
     );
@@ -260,11 +262,11 @@ const UserEditForm = ({ userDetails }) => {
       prevUserModules.map((module) =>
         module.name === moduleName
           ? {
-              ...module,
-              transactions: module.transactions.filter(
-                (transaction) => transaction !== transactionName
-              ),
-            }
+            ...module,
+            transactions: module.transactions.filter(
+              (transaction) => transaction !== transactionName
+            ),
+          }
           : module
       )
     );
@@ -272,6 +274,8 @@ const UserEditForm = ({ userDetails }) => {
   function handleStatusChange(activestatus) {
     setUserActive(activestatus);
   }
+console.log(userrole,'us')
+  
   return (
     <>
       <div className="flex items-center mb-[30px] px-4 justify-between">
@@ -297,7 +301,7 @@ const UserEditForm = ({ userDetails }) => {
           className="space-y-8 w-full pl-8"
         >
           <div className="flex border-b pb-[16px] justify-between items-center">
-            <div className="grid grid-cols-2 grid-rows-2 min-w-[500px] gap-8">
+            <div className="grid grid-cols-3 grid-rows-2 min-w-[500px] gap-8">
               <FormField
                 control={form.control}
                 name="username"
@@ -366,6 +370,57 @@ const UserEditForm = ({ userDetails }) => {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="roleId"
+                className="bg-white"
+                render={({ field }) => (
+                  <FormItem> 
+                    <FormLabel>Role</FormLabel>
+                    <Select
+                       onValueChange={(value) => {
+                        field.onChange(value); // Update the form state
+                        setUserRole(value); // Update the selectedRole state
+                      }} // Update the form state
+                      value={field.value} // Set the current value
+                      className='bg-white'
+                    >
+                      <FormControl>
+                        <SelectTrigger className="bg-white">
+                          <SelectValue className="bg-white" placeholder="Select a role" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className='bg-white'>
+                        {roles.map((role) => (
+                          <SelectItem className='bg-white' key={role.id} value={String(role.name)}>
+                            {role.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {userrole =='Sales representative' && 
+                <FormField
+                control={form.control}
+                name="Sales rep code"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Sales Rep code</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="bg-white"
+                        placeholder="Enter Sales rep code"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              }
             </div>
             <div className="flex items-center mr-20 flex-col">
               <div>
@@ -379,7 +434,7 @@ const UserEditForm = ({ userDetails }) => {
                 Edit Profile Picture
               </Button>
               <div className="flex mt-[16px] gap-2">
-                <h4>User status</h4>
+                <h4>Active</h4>
                 <Switch
                   checked={useractive}
                   onCheckedChange={() => handleStatusChange(!useractive)}
@@ -387,7 +442,7 @@ const UserEditForm = ({ userDetails }) => {
               </div>
             </div>
           </div>
-          <div className="mt-10 space-y-8">
+          <div className="mt-16 space-y-8">
             {/* <label className="py-3 text-lg font-semibold text-gray-700">
               Company
             </label>
@@ -582,18 +637,18 @@ const UserEditForm = ({ userDetails }) => {
                 })}
               </div>
             </div> */}
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center justify-between gap-8">
               <DragDropComponent title={"Companies"} dropItems={DaDcompanies} />
               <DragDropComponent title={"Sites"} dropItems={DaSites} />
             </div>
 
-            <div className="flex items-center justify-between gap-4">
+            {/* <div className="flex items-center justify-between gap-4">
               <DragDropComponent title={"Roles"} dropItems={DaRoles} />
               <DragDropComponent
                 title={"Permissions"}
                 dropItems={DaPermissions}
               />
-            </div>
+            </div> */}
             <div className="flex items-center justify-between gap-4">
               <DragDropComponent title={"Modules"} dropItems={DaModules} />
               <DragDropComponent
