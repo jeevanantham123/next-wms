@@ -10,6 +10,7 @@ export default function Navbar() {
   const [openNavMenu, setOpenNavMenu] = useState(false);
   const setOpenSidebar = useSidebarStore((state) => state.setOpenSidebar);
   const openSidebar = useSidebarStore((state) => state.openSidebar);
+  const isAdmin = true
   const router = useRouter();
   const pathName = usePathname();
 
@@ -68,6 +69,7 @@ export default function Navbar() {
               </svg>
             </button>
           </div>
+
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-between">
             <div className="flex cursor-pointer w-full flex-shrink-0 items-center justify-between">
               <img
@@ -76,28 +78,30 @@ export default function Navbar() {
                 alt="Your Company"
                 onClick={() => setOpenSidebar(!openSidebar)}
               />
-              <div className="flex flex-1 w-full gap-2 justify-center items-center ml-6">
-                <Button
-                  variant={pathName.includes("wms") ? "default" : "outline"}
-                  onClick={() => router.push("/wms/dashboard")}
-                >
-                  Warehouse Management
-                </Button>
-                <Button
-                  variant={
-                    pathName.includes("auditing") ? "default" : "outline"
-                  }
-                  onClick={() => router.push("/auditing/dashboard")}
-                >
-                  Auditing
-                </Button>
-                <Button
-                  variant={pathName.includes("admin") ? "default" : "outline"}
-                  onClick={() => router.push("/admin/dashboard")}
-                >
-                  Authentication
-                </Button>
-              </div>
+              {!isAdmin &&
+                <div className="flex flex-1 w-full gap-2 justify-center items-center ml-6">
+                  <Button
+                    variant={pathName.includes("wms") ? "default" : "outline"}
+                    onClick={() => router.push("/wms/dashboard")}
+                  >
+                    Warehouse Management
+                  </Button>
+                  <Button
+                    variant={
+                      pathName.includes("auditing") ? "default" : "outline"
+                    }
+                    onClick={() => router.push("/auditing/dashboard")}
+                  >
+                    Auditing
+                  </Button>
+                  <Button
+                    variant={pathName.includes("admin") ? "default" : "outline"}
+                    onClick={() => router.push("/admin/dashboard")}
+                  >
+                    Authentication
+                  </Button>
+                </div>
+              }
             </div>
 
             <div className="hidden">
@@ -130,6 +134,7 @@ export default function Navbar() {
               </div>
             </div>
           </div>
+
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             <button
               type="button"

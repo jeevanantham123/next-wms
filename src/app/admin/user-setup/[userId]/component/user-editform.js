@@ -13,8 +13,16 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import DragDropComponent from "./DragAndDrop";
+import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -83,6 +91,13 @@ const DaTransactions = [
   { id: 2, name: "Transaction 2", assigned: false },
   { id: 3, name: "Transaction 3", assigned: false },
   { id: 4, name: "Transaction 4", assigned: false },
+];
+
+const DaFolders = [
+  { id: 1, name: "Folder 1", assigned: false },
+  { id: 2, name: "Folder 2", assigned: false },
+  { id: 3, name: "Folder 3", assigned: false },
+  { id: 4, name: "Folder 4", assigned: false },
 ];
 
 const companies = [
@@ -180,7 +195,9 @@ const UserEditForm = ({ userDetails }) => {
       ],
     },
   ]);
+  const [userrole, setUserRole] = useState("");
   const [useractive, setUserActive] = useState(true);
+  const [holdStatus, setUserHold] = useState(false);
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -272,6 +289,10 @@ const UserEditForm = ({ userDetails }) => {
   function handleStatusChange(activestatus) {
     setUserActive(activestatus);
   }
+  function handleHoldChange(holdStatus) {
+    setUserHold(holdStatus);
+  }
+
   return (
     <>
       <div className="flex items-center mb-[30px] px-4 justify-between">
@@ -297,7 +318,7 @@ const UserEditForm = ({ userDetails }) => {
           className="space-y-8 w-full pl-8"
         >
           <div className="flex border-b pb-[16px] justify-between items-center">
-            <div className="grid grid-cols-2 grid-rows-2 min-w-[500px] gap-8">
+            <div className="grid grid-cols-2 grid-rows-3 min-w-[500px] gap-8">
               <FormField
                 control={form.control}
                 name="username"
@@ -366,28 +387,92 @@ const UserEditForm = ({ userDetails }) => {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="roleId"
+                className="bg-white"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Role</FormLabel>
+                    <Select
+                      onValueChange={(value) => {
+                        field.onChange(value); // Update the form state
+                        setUserRole(value); // Update the selectedRole state
+                      }} // Update the form state
+                      value={field.value} // Set the current value
+                      className="bg-white"
+                    >
+                      <FormControl>
+                        <SelectTrigger className="bg-white">
+                          <SelectValue
+                            className="bg-white"
+                            placeholder="Select a role"
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-white">
+                        {roles.map((role) => (
+                          <SelectItem
+                            className="bg-white"
+                            key={role.id}
+                            value={String(role.name)}
+                          >
+                            {role.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {userrole == "Sales representative" && (
+                <FormField
+                  control={form.control}
+                  name="Sales rep code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Sales Rep code</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="bg-white"
+                          placeholder="Enter Sales rep code"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
             </div>
-            <div className="flex items-center mr-20 flex-col">
-              <div>
+            <div className="flex items-center">
+              <div className="grid gap-4 mr-6 grid-cols-2 grid-rows-2">
+                <h4>Active</h4>
+                <Switch
+                  checked={useractive}
+                  onCheckedChange={() => handleStatusChange(!useractive)}
+                />
+                <h4>Hold</h4>
+                <Switch
+                  checked={holdStatus}
+                  onCheckedChange={() => handleHoldChange(!holdStatus)}
+                />
+              </div>
+              <div className="flex flex-col justify-center items-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="https://picsum.photos/200/200"
                   className="rounded-full"
                   alt="avatar"
                 />
-              </div>
-              <Button variant="outline" className="mt-[14px]">
-                Edit Profile Picture
-              </Button>
-              <div className="flex mt-[16px] gap-2">
-                <h4>User status</h4>
-                <Switch
-                  checked={useractive}
-                  onCheckedChange={() => handleStatusChange(!useractive)}
-                />
+                <Button variant="outline" className="mt-[14px]">
+                  Edit Profile Picture
+                </Button>
               </div>
             </div>
           </div>
-          <div className="mt-10 space-y-8">
+          <div className="mt-16 space-y-8">
             {/* <label className="py-3 text-lg font-semibold text-gray-700">
               Company
             </label>
@@ -582,25 +667,45 @@ const UserEditForm = ({ userDetails }) => {
                 })}
               </div>
             </div> */}
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center justify-start gap-8">
               <DragDropComponent title={"Companies"} dropItems={DaDcompanies} />
               <DragDropComponent title={"Sites"} dropItems={DaSites} />
             </div>
 
-            <div className="flex items-center justify-between gap-4">
+            {/* <div className="flex items-center justify-start gap-4">
               <DragDropComponent title={"Roles"} dropItems={DaRoles} />
               <DragDropComponent
                 title={"Permissions"}
                 dropItems={DaPermissions}
               />
-            </div>
-            <div className="flex items-center justify-between gap-4">
+            </div> */}
+            <div className="flex items-center justify-start gap-8">
               <DragDropComponent title={"Modules"} dropItems={DaModules} />
               <DragDropComponent
                 title={"Transactions"}
                 dropItems={DaTransactions}
               />
             </div>
+            <div>
+              <DragDropComponent title={"Folders"} dropItems={DaFolders} />
+            </div>
+          </div>
+          <div className="pt-[16px] text-[14px] font-bold border-t">
+            Master Data Enable
+          </div>
+          <div className="grid grid-cols-4 gap-2 grid-rows-3">
+            <h2>Product Category</h2>
+            <Checkbox />
+            <h2>Product</h2>
+            <Checkbox />
+            <h2>BOM</h2>
+            <Checkbox />
+            <h2>Routing</h2>
+            <Checkbox />
+            <h2>Location Type</h2>
+            <Checkbox />
+            <h2>Location</h2>
+            <Checkbox />
           </div>
         </form>
       </FormProvider>

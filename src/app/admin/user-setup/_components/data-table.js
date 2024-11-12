@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-import { Cross2Icon, DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { Cross2Icon, Pencil1Icon } from "@radix-ui/react-icons";
 import {
   flexRender,
   getCoreRowModel,
@@ -12,13 +12,6 @@ import {
 } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 
 import {
@@ -33,12 +26,10 @@ import { Switch } from "@/components/ui/switch";
 import { useMutation } from "@tanstack/react-query";
 import { put } from "@/api";
 import { toast } from "sonner";
-import AddUserModal from "./create-user";
-import AddPermissionModal from "./create-permission";
-import ChangePasswordModal from "./change-password";
 import DeleteUserModal from "./delete-user";
-import ChangePermissionModal from "./change-permission";
 import { useRouter } from "next/navigation";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 const ToggleStatus = ({ row, refetch }) => {
   const statusChange = useMutation({
@@ -122,37 +113,22 @@ export function UserDatatable({ data, refetch }) {
     },
     {
       id: "actions",
+      header: "Actions",
       enableHiding: false,
       cell: ({ row }) => {
-        console.log(row.original.id, "row");
         return (
-          <DropdownMenu className="bg-white">
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <DotsHorizontalIcon className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-white">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={(e) => e.preventDefault()}>
-                <ChangePermissionModal refetch={refetch} row={row.original} />
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={(e) => e.preventDefault()}>
-                <ChangePasswordModal refetch={refetch} row={row.original} />
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() =>
-                  router.push(`/admin/user-setup/${row.original.id}`)
-                }
-              >
-                Edit User
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={(e) => e.preventDefault()}>
-                <DeleteUserModal refetch={refetch} row={row.original} />
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex gap-2">
+            <Button
+              onClick={() =>
+                router.push(`/admin/user-setup/${row.original.id}`)
+              }
+            >
+              <Pencil1Icon />
+            </Button>
+            <Button variant="destructive" className="">
+              <DeleteUserModal refetch={refetch} row={row.original} />
+            </Button>
+          </div>
         );
       },
     },
@@ -180,18 +156,38 @@ export function UserDatatable({ data, refetch }) {
   return (
     <div className="w-full bg-white p-4 rounded-md overflow-hidden shadow-md">
       <div className="flex justify-between mb-12 items-center py-4">
-        <Input
-          placeholder="Filter user..."
-          value={table.getColumn("email")?.getFilterValue() ?? ""}
-          onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
-          }
-          className="w-fit"
-        />
-        <div className="flex gap-4">
+        <div className="flex gap-2">
+          <Input
+            placeholder="Search user..."
+            value={table.getColumn("email")?.getFilterValue() ?? ""}
+            onChange={(event) =>
+              table.getColumn("email")?.setFilterValue(event.target.value)
+            }
+            className="w-[250px]"
+          />
+          <Button className="ml-2">Search</Button>
+        </div>
+        <div className="flex ml-[24px]">
+          {/* <div className="font-semibold">Filter users</div> */}
+          <RadioGroup defaultValue="all" className="flex gap-4">
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="all" id="all" />
+              <Label htmlFor="all">All</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="active" id="active" />
+              <Label htmlFor="active">Active</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="inactive" id="inactive" />
+              <Label htmlFor="inactive">Inactive</Label>
+            </div>
+          </RadioGroup>
+        </div>
+        {/* <div className="flex gap-4">
           <AddPermissionModal refetch={refetch} />
           <AddUserModal refetch={refetch} />
-        </div>
+        </div> */}
       </div>
 
       <div className="rounded-md border">

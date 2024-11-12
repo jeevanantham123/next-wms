@@ -16,7 +16,7 @@ export const App = ({ children }) => {
       {authorizedUser ? (
         <>
           <Navbar />
-          <div className="container border-2 mx-auto">{children}</div>
+          <div className="container mx-auto">{children}</div>
         </>
       ) : (
         <Login />

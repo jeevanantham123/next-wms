@@ -41,15 +41,15 @@ const DragDropComponent = ({ dropItems, title }) => {
   return (
     <div className="flex space-x-8">
       {/* Left Side: List of Items */}
-      <div className="w-[300px] p-4 border rounded-lg bg-gray-50">
-        <h3 className="text-lg font-semibold mb-4">{title} available</h3>
+      <div className="w-[220px] p-4 border rounded-lg bg-gray-50">
+        <h3 className="text-[14px] font-semibold mb-4">{title} available</h3>
         <div className="space-y-2">
           {items.map((item) => (
             <div
               key={item.id}
               draggable={!item.assigned}
               onDragStart={(e) => handleDragStart(e, item)}
-              className={`p-2 rounded-lg cursor-pointer transition ${
+              className={`p-2 text-[12px] rounded-lg cursor-pointer transition ${
                 item.assigned
                   ? "bg-purple-200 text-theme"
                   : "bg-theme/80 text-white"
@@ -63,18 +63,18 @@ const DragDropComponent = ({ dropItems, title }) => {
 
       {/* Right Side: Drop Zone */}
       <div
-        className="w-[300px] p-4 border-dashed border-2 border-purple-500 rounded-lg"
+        className="w-[220px] p-4 border-dashed border-2 border-purple-500 rounded-lg"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
       >
-        <h3 className="text-lg font-semibold mb-4">{title} assigned</h3>
+        <h3 className="text-[14px] font-semibold mb-4">{title} assigned</h3>
         <div className="flex items-center justify-center -mt-[30px] h-full">
           {assignedItems.length > 0 ? (
             <div className="flex gap-2 items-center flex-wrap">
               {assignedItems.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center max-h-[40px] p-2 rounded-lg bg-purple-100 text-purple-700"
+                  className="flex text-[12px] items-center max-h-[40px] p-2 rounded-lg bg-purple-100 text-purple-700"
                 >
                   <span>{item.name}</span>
                   <button
@@ -87,7 +87,7 @@ const DragDropComponent = ({ dropItems, title }) => {
               ))}
             </div>
           ) : (
-            <p className="text-gray-500 border border-dashed p-2 rounded-md">
+            <p className="text-gray-500 text-[12px] border border-dashed p-2 rounded-md">
               Drag items here to assign
             </p>
           )}

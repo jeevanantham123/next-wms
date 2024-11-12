@@ -41,8 +41,10 @@ export function ModuleComboBox() {
   const [value, setValue] = React.useState("");
   const router = useRouter();
   const pathName = usePathname();
+  const isAdmin = true
 
   return (
+    <div className={isAdmin && "hidden"}>
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
@@ -88,5 +90,6 @@ export function ModuleComboBox() {
         </Command>
       </PopoverContent>
     </Popover>
+    </div>
   );
 }

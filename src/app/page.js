@@ -10,10 +10,14 @@ export default function Home() {
   const userPermissions = useAuthStore((state) => state.userPermissions);
 
   useEffect(() => {
-    if (userPermissions.includes("admin")) router.push("/admin/dashboard");
-    if (userPermissions.includes("wms")) router.push("/wms/dashboard");
-    if (userPermissions.includes("auditing"))
-      router.push("/auditing/dashboard");
+    if (userPermissions.includes("wms")) {
+      router.push("/wms/dashboard");
+    }
+    else if (userPermissions.includes("auditing")) { router.push("/auditing/dashboard"); }
+    else (userPermissions.includes("admin"))
+    {
+      router.push("/admin/dashboard");
+    }
   }, []);
 
   return (
