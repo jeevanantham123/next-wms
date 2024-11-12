@@ -11,7 +11,7 @@ export default function Layout({ children }) {
   const router = useRouter();
   if (!userPermissions.includes("admin")) router.push("/unauthorized");
   return (
-    <div className="sm:flex relative">
+    <div className="sm:flex">
       <AdminSidebar />
       <div
         className={`${

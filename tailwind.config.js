@@ -15,7 +15,7 @@ module.exports = {
           sm: "100%", // Full width on small screens
           md: "728px", // Medium screen
           lg: "984px", // Large screen
-          xl: "1360px", // Extra large screen
+          xl: "1330px", // Extra large screen
           "2xl": "1440px", // 2X large screen
         },
       },

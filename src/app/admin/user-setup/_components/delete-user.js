@@ -1,21 +1,17 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogFooter,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { PlusCircledIcon } from "@radix-ui/react-icons";
+import { TrashIcon } from "@radix-ui/react-icons";
 import { toast } from "sonner";
 import { LoadingSpinner } from "@/components/ui/loader";
-import { changePasswordbyId, deleteUserbyId } from "./actions";
-import bcrypt from "bcryptjs";
+import { deleteUserbyId } from "./actions";
 
 export default function DeleteUserModal({ refetch, row }) {
   const { userName, id } = row;
@@ -52,7 +48,7 @@ export default function DeleteUserModal({ refetch, row }) {
           className="cursor-pointer"
           onClick={() => setDialogOpen(true)}
         >
-          Delete User
+          <TrashIcon />
         </div>
       </DialogTrigger>
       <DialogContent>
