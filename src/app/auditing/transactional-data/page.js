@@ -1,12 +1,12 @@
 import React from 'react';
-import AuditInfo from './transactional-data';
+import TransactionData from './transactional-data';
 
-const AuditInfoPage = () => {
+const TransactionDataInfoPage = () => {
     return (
         <div>
-            <AuditInfo />
+            <TransactionData />
         </div>
     );
 };
 
-export default AuditInfoPage;
+export default TransactionDataInfoPage;

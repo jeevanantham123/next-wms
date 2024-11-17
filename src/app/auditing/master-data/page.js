@@ -1,12 +1,12 @@
 import React from 'react';
-import AuditInfo from './master-data';
+import MasterData from './master-data';
 
-const AuditInfoPage = () => {
+const MasterDataInfoPage = () => {
     return (
         <div>
-            <AuditInfo />
+            <MasterData />
         </div>
     );
 };
 
-export default AuditInfoPage;
+export default MasterDataInfoPage;

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { TextField, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Menu, MenuItem as MuiMenuItem, Select } from '@mui/material';
 
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -8,6 +9,11 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { Button } from "@/components/ui/button";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import {
+  CaretSortIcon,
+  ChevronDownIcon,
+  DotsHorizontalIcon,
+} from "@radix-ui/react-icons";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -19,18 +25,38 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { blue, blueGrey } from '@mui/material/colors';
 
-// import {
-//     Table,
-//     TableBody,
-//     TableCell,
-//     TableHead,
-//     TableHeader,
-//     TableRow,
-//   } from "@/components/ui/table";
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
+
+const columns = [
+    { header: "Table", key: "table" },
+    { header: "Table Title", key: "tableTitle" },
+    { header: "Transaction", key: "transaction" },
+    { header: "Date", key: "date" },
+    { header: "Time", key: "time" },
+    { header: "Operation", key: "operation" },
+    { header: "User", key: "user" },
+    { header: "Name", key: "name" },
+    { header: "Folder", key: "folder" },
+    { header: "Table Field", key: "tableField" },
+    { header: "Field Description", key: "fieldDescription" },
+  ];
 const primaryColor = 'green';
 
+// Styles (similar to User.js)
+const inputStyles = {
+    border: "2px solid lightgrey",
+    borderRadius: "4px",
+    width: '150px',
+    height: "40px",
+    transition: "border-color 0.3s",
+    "&:hover": { borderColor: blue },
+    "&:focus": { borderColor: blueGrey },
+  };
 // Define custom styles
 const styles = {
     inputField: {
@@ -59,43 +85,10 @@ const styles = {
             borderColor: primaryColor,
         }
     },
-    dropdownSelect: {
-        border: '2px solid lightgrey',
-        borderRadius: '4px',
-        width: '200px',
-        height: '40px',
-        transition: 'border-color 0.3s',
-        '&:hover': {
-            borderColor: primaryColor,
-        },
-        '&:focus': {
-            borderColor: primaryColor,
-        }
-    },
-    datePicker: {
-
-        border: '2px solid lightgrey',
-        borderRadius: '4px',
-
-        width: '150px', 
-        height: '40px', 
-        '& .MuiInputBase-root': {
-            height: '40px', 
-        },
-        '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: 'lightgrey',
-        },
-        '&:hover .MuiOutlinedInput-notchedOutline': {
-            borderColor: primaryColor,
-        },
-        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: primaryColor,
-        },
-    },
 };
 
 
-const AuditInfo = () => {
+const MasterData = () => {
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
     const [user, setUser] = useState('');
@@ -103,55 +96,21 @@ const AuditInfo = () => {
     const [module, setModule] = useState('');
     const [anchorEl, setAnchorEl] = useState(null);
     const [selectedRow, setSelectedRow] = useState(null);
-    const [visibleColumns, setVisibleColumns] = useState(['Table', 'Table Title', 'Transaction', 'Date', 'Time', 'Operation', 'User', 'Name', 'Folder', 'Table Field', 'Field Description']);
-    
-    const open = Boolean(anchorEl);
+    const [filters, setFilters] = useState({
+        user: "", operation: "", module: ""
+      });
+      const [visibleColumns, setVisibleColumns] = useState(
+        columns.reduce((acc, column) => ({ ...acc, [column.header]: true }), {})
+      );
 
-    const handleSearch = () => {
-        // Logic for handling the search
-    };
+    const [data, setData] = useState([]);
 
-    const handleActionClick = (event, row) => {
-        setAnchorEl(event.currentTarget);
-        setSelectedRow(row);
-    };
-
-    const handleActionClose = () => {
-        setAnchorEl(null);
-        setSelectedRow(null);
-    };
-
-    const handleEdit = () => {
-        if (selectedRow && selectedRow.user === user) {
-            alert(`Editing record for user: ${selectedRow.user}`);
-        } else {
-            alert("You can only edit your own records.");
-        }
-        handleActionClose();
-    };
-
-    const handleDelete = () => {
-        if (selectedRow && selectedRow.user === user) {
-            alert(`Deleting record for user: ${selectedRow.user}`);
-        } else {
-            alert("You can only delete your own records.");
-        }
-        handleActionClose();
-    };
-
-    const handleColumnChange = (column) => {
-        setVisibleColumns(prev => {
-          if (prev.includes(column)) {
-            return prev.filter(item => item !== column);
-          } else {
-            return [...prev, column];
-          }
-        });
-      };
-
-    const mockData = [
+    // Mock data
+    useEffect(() => {
+      setData([
         { table: 'PORDER', tableTitle: 'POs', transaction: 'ZA061', date: '10/22/24', time: '07:05', operation: 'INSERT', user: 'SRAV', name: 'Sravya', folder: 'GITTRN', tableField: 'BPAADD', fieldDesc: 'Address' },
         { table: 'SORDER', tableTitle: 'POs', transaction: 'ZA001', date: '11/01/24', time: '07:05', operation: 'UPDATE', user: 'SREE', name: 'Sree G', folder: 'GITTRN', tableField: 'BPAADD', fieldDesc: 'Address' },
+        { table: 'PORDER', tableTitle: 'POs', transaction: 'ZA061', date: '10/22/24', time: '07:05', operation: 'INSERT', user: 'SREE', name: 'Sravya', folder: 'GITTRN', tableField: 'BPAADD', fieldDesc: 'Address' },
         { table: 'PORDER', tableTitle: 'POs', transaction: 'ZA061', date: '10/22/24', time: '07:05', operation: 'INSERT', user: 'SRAV', name: 'Sravya', folder: 'GITTRN', tableField: 'BPAADD', fieldDesc: 'Address' },
         { table: 'PORDER', tableTitle: 'POs', transaction: 'ZA061', date: '10/22/24', time: '07:05', operation: 'INSERT', user: 'SRAV', name: 'Sravya', folder: 'GITTRN', tableField: 'BPAADD', fieldDesc: 'Address' },
         { table: 'PORDER', tableTitle: 'POs', transaction: 'ZA061', date: '10/22/24', time: '07:05', operation: 'INSERT', user: 'SRAV', name: 'Sravya', folder: 'GITTRN', tableField: 'BPAADD', fieldDesc: 'Address' },
@@ -173,19 +132,160 @@ const AuditInfo = () => {
         { table: 'PORDER', tableTitle: 'POs', transaction: 'ZA061', date: '10/22/24', time: '07:05', operation: 'INSERT', user: 'SRAV', name: 'Sravya', folder: 'GITTRN', tableField: 'BPAADD', fieldDesc: 'Address' },
         { table: 'PORDER', tableTitle: 'POs', transaction: 'ZA061', date: '10/22/24', time: '07:05', operation: 'INSERT', user: 'SRAV', name: 'Sravya', folder: 'GITTRN', tableField: 'BPAADD', fieldDesc: 'Address' },
         { table: 'PORDER', tableTitle: 'POs', transaction: 'ZA061', date: '10/22/24', time: '07:05', operation: 'INSERT', user: 'SRAV', name: 'Sravya', folder: 'GITTRN', tableField: 'BPAADD', fieldDesc: 'Address' },
-        { table: 'PORDER', tableTitle: 'POs', transaction: 'ZA061', date: '10/22/24', time: '07:05', operation: 'INSERT', user: 'SRAV', name: 'Sravya', folder: 'GITTRN', tableField: 'BPAADD', fieldDesc: 'Address' },
-        { table: 'PORDER', tableTitle: 'POs', transaction: 'ZA061', date: '10/22/24', time: '07:05', operation: 'INSERT', user: 'SRAV', name: 'Sravya', folder: 'GITTRN', tableField: 'BPAADD', fieldDesc: 'Address' },
-    
-    ];
+      ]);
+    }, []);
+  
+    const handleFilterChange = (field, value) => {
+      setFilters((prevFilters) => ({ ...prevFilters, [field]: value }));
+    };
+  
+    const filteredData = data.filter((row) =>
+      (!filters.user || row.user.toLowerCase().includes(filters.user.toLowerCase())) &&
+      (!filters.operation || row.operation.toLowerCase().includes(filters.operation.toLowerCase())) &&
+      (!filters.module || row.function.toLowerCase().includes(filters.function.toLowerCase())) 
+    );
 
-    const columnOptions = [
-       'Columns', 'Table', 'Table Title', 'Transaction', 'Date', 'Time', 'Operation', 'User', 'Name', 'Folder', 'Table Field', 'Field Description'
-    ];
+
+    const toggleColumnVisibility = (column) => {
+        setVisibleColumns((prev) => ({
+          ...prev,
+          [column]: !prev[column],
+        }));
+      };
+
+
+        // Function to convert data to Excel with custom formatting
+const convertToExcel = () => {
+  try {
+    // Map filtered data to export data with only visible columns
+    const exportData = filteredData.map(row =>
+      columns.reduce((acc, column) => {
+        if (visibleColumns[column.header]) {
+          acc[column.header] = row[column.key];
+        }
+        return acc;
+      }, {})
+    );
+
+    // Create worksheet and add data
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+
+    // Set dynamic column widths based on content length (minimum width of 15 characters)
+    const columnWidths = columns
+      .filter(column => visibleColumns[column.header])
+      .map(column => ({
+        wch: Math.max(15, ...filteredData.map(row => (row[column.key] || "").toString().length + 2))
+      }));
+    worksheet['!cols'] = columnWidths;
+
+    // Define header style (bold, white font on dark blue background, centered)
+    const headerStyle = {
+      font: { bold: true, color: { rgb: "FFFFFF" } },
+      fill: { fgColor: { rgb: "00396B" } }, // Dark blue background
+      alignment: { horizontal: "center", vertical: "center" }
+    };
+
+    // Apply style to headers
+    const headers = columns.filter(column => visibleColumns[column.header]).map(col => col.header);
+    headers.forEach((header, index) => {
+      const cellAddress = XLSX.utils.encode_cell({ r: 0, c: index });
+      worksheet[cellAddress].s = headerStyle;
+    });
+
+    // Apply center alignment to all data cells
+    exportData.forEach((_, rowIndex) => {
+      headers.forEach((_, colIndex) => {
+        const cellAddress = XLSX.utils.encode_cell({ r: rowIndex + 1, c: colIndex });
+        if (worksheet[cellAddress]) {
+          worksheet[cellAddress].s = { alignment: { horizontal: "center", vertical: "center" } };
+        }
+      });
+    });
+
+    // Create workbook and append worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+
+    // Generate a custom filename with current date and time
+    const fileName = `Master_Data_${new Date().toISOString().replace(/[:.]/g, '-')}.xlsx`;
+
+    // Export the workbook to an Excel file
+    XLSX.writeFile(workbook, fileName);
+  } catch (error) {
+    console.error("Error exporting to Excel:", error);
+  }
+};
+
+
+//new req
+const convertToPDF = () => {
+  try{
+  const doc = new jsPDF('landscape'); // Landscape for more horizontal space
+  
+  // Set up header text
+  const headerText = "SV Stack";
+  const pageWidth = doc.internal.pageSize.getWidth();
+  
+  // Center-align the header text
+  doc.setFontSize(18);
+  doc.text(headerText, pageWidth / 2, 15, { align: 'center' });
+
+  // Subtitle "Master Data" centered, slightly smaller font
+  doc.setFontSize(12); // Slightly smaller font for subtitle
+  doc.text("Master Data Report", pageWidth / 10, 20); // Centered position
+  
+  // Prepare table data
+  const tableColumnHeaders = columns
+    .filter(column => visibleColumns[column.header])
+    .map(column => column.header);
+
+  const tableRows = filteredData.map(row =>
+    columns
+      .filter(column => visibleColumns[column.header])
+      .map(column => row[column.key])
+  );
+
+  // Add table to PDF with single-page adjustments
+  doc.autoTable({
+    head: [tableColumnHeaders],
+    body: tableRows,
+    startY: 25,
+    theme: 'striped',
+    headStyles: {
+      fillColor: [0, 57, 107],
+      valign: 'middle',
+      halign: 'center'
+    },
+    styles: {
+      fontSize: 7,        // Reduced font size for fitting more columns
+      cellPadding: 1,     // Tighter cell padding
+      valign: 'middle',
+      halign: 'center',
+      overflow: 'hidden'  // Ensures text does not overflow outside cells
+    },
+    tableWidth: 'auto',   // Compresses table to fit within the page width
+    columnStyles: {
+      0: { cellWidth: 'auto' },  // Dynamically adjust column widths
+    },
+    margin: { top: 10 },
+  });
+  doc.save(`Master_Data_${new Date().toISOString().replace(/[:.]/g, '-')}.pdf`);
+} catch (error) {
+  console.error("Error exporting to Pdf:", error);
+  alert("An error occurred while exporting to PDF. Please try again.");
+}
+};
+
 
     return (
         <>
-            <div style={{ padding: '70px' }}>
-                <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
+             <div style={{ padding: '70px' }}>
+       {/* <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '20px' }}> */}
+       <div className="w-full bg-white p-4 rounded-md overflow-hidden shadow-md">
+      <div className="flex gap-2 mb-12 items-center py-4">
+
+            {/* <div style={{ padding: '70px' }}>
+                <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}> */}
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <DatePicker
                             label="Start Date"
@@ -199,7 +299,6 @@ const AuditInfo = () => {
                                 },
                             }}
                         />
-
                         <DatePicker
                             label="End Date"
                             value={endDate}
@@ -214,27 +313,19 @@ const AuditInfo = () => {
                         />
                     </LocalizationProvider>
                     <TextField
-                        label="User"
-                        value={user}
-                        onChange={(e) => setUser(e.target.value)}
-                        select
-                        variant="outlined"
-                        InputProps={{ style: { ...styles.selectField } }}
-                    >
-                        <MenuItem value="SRAV">SRAV</MenuItem>
-                        <MenuItem value="SREE">SREE</MenuItem>
-                    </TextField>
+          label="User"
+          value={filters.user}
+          onChange={(e) => handleFilterChange("user", e.target.value)}
+          variant="outlined"
+          InputProps={{ style: inputStyles }}
+        />
                     <TextField
-                        label="Operation"
-                        value={operation}
-                        onChange={(e) => setOperation(e.target.value)}
-                        select
-                        variant="outlined"
-                        InputProps={{ style: { ...styles.selectField } }}
-                    >
-                        <MenuItem value="INSERT">INSERT</MenuItem>
-                        <MenuItem value="UPDATE">UPDATE</MenuItem>
-                    </TextField>
+          label="Operation"
+          value={filters.operation}
+          onChange={(e) => handleFilterChange("operation", e.target.value)}
+          variant="outlined"
+          InputProps={{ style: inputStyles }}
+        />
                     <TextField
                         label="Module"
                         value={module}
@@ -245,33 +336,48 @@ const AuditInfo = () => {
                     >
                         <MenuItem value="Purchasing">Purchasing</MenuItem>
                     </TextField>
-                    <Button onClick={handleSearch}>Search</Button>
+                   
+           <DropdownMenu>
+          <DropdownMenuTrigger asChild>
 
-                    <DropdownMenu>
-            <DropdownMenuTrigger>
-             <Button width- >Columns</Button> 
-            </DropdownMenuTrigger>
-            <DropdownMenuContent >
-              {columnOptions.map((column) => (
-                <DropdownMenuCheckboxItem
-                  key={column}
-                  checked={visibleColumns.includes(column)}
-                  onCheckedChange={() => handleColumnChange(column)}
-                >
-                  {column}
-                </DropdownMenuCheckboxItem>
-              ))}
-            </DropdownMenuContent>
+            <Button variant="outline" className="ml-auto">
+              Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {columns.map(({ header }) => (
+              <DropdownMenuCheckboxItem
+                key={header}
+                checked={visibleColumns[header]}
+                onCheckedChange={() => toggleColumnVisibility(header)}
+              >
+                {header}
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
           </DropdownMenu>
 
+{/* Dropdown for Download Options */}
+<DropdownMenu>
+            <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+              Download As <ChevronDownIcon className="ml-2 h-4 w-4" />
+            </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={convertToExcel}>Excel Format</DropdownMenuItem>
+              <DropdownMenuItem onClick={convertToPDF}>PDF Format</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
                 </div>
 
-                <div style={{ textAlign:'rignt'}}>
-                    <h3>Row Count: {mockData.length}</h3>
+                 <div style={{ maxHeight: '400px', overflowY: 'auto', overflowX: 'auto' }}> 
+                <div className="rounded-md border">
+
+                <div style={{ textAlign:'rignt', float:'right', marginBottom:'10px'}}>
+                    <h3>Row Count: {data.length}</h3>
                 </div>
 
-                <div style={{ maxHeight: '400px', overflowY: 'auto', overflowX: 'auto' }}>
-                
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
@@ -279,44 +385,41 @@ const AuditInfo = () => {
                                 <TableCell padding="checkbox">
                                     <Checkbox />
                                 </TableCell>
-                                {columnOptions.map((column) =>
-                                    visibleColumns.includes(column) ? (
-                                        <TableCell key={column} style={{ color: 'grey' }}>{column}</TableCell>
-                                    ) : null
-                                )}
+                                 {columns.map(({ header }) =>
+                                  visibleColumns[header] ? (
+                                <TableCell key={header} style={{ color: 'grey', whiteSpace: 'nowrap' }}>
+                                  {header}
+                                </TableCell>
+                                 ) : null
+                                  )}
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {mockData.map((row, index) => (
-                                <TableRow key={index}>
-                                    <TableCell padding="checkbox">
-                                        <Checkbox />
-                                    </TableCell>
-                                    {visibleColumns.includes('Table') && <TableCell>{row.table}</TableCell>}
-                                    {visibleColumns.includes('Table Title') && <TableCell>{row.tableTitle}</TableCell>}
-                                    {visibleColumns.includes('Transaction') && <TableCell>{row.transaction}</TableCell>}
-                                    {visibleColumns.includes('Date') && <TableCell>{row.date}</TableCell>}
-                                    {visibleColumns.includes('Time') && <TableCell>{row.time}</TableCell>}
-                                    {visibleColumns.includes('Operation') && <TableCell>{row.operation}</TableCell>}
-                                    {visibleColumns.includes('User') && <TableCell>{row.user}</TableCell>}
-                                    {visibleColumns.includes('Name') && <TableCell>{row.name}</TableCell>}
-                                    {visibleColumns.includes('Folder') && <TableCell>{row.folder}</TableCell>}
-                                    {visibleColumns.includes('Table Field') && <TableCell>{row.tableField}</TableCell>}
-                                    {visibleColumns.includes('Field Description') && <TableCell>{row.fieldDesc}</TableCell>}
-                                    <TableCell>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                             {filteredData.map((row, index) => (
+                        <TableRow key={index}>
+                        <TableCell padding="checkbox">
+                          <Checkbox />
+                       </TableCell>
+                        {columns.map(({ header, key }) =>
+                         visibleColumns[header] ? (
+                      <TableCell key={header}>{row[key]}</TableCell>
+                          ) : null
+                          )}
+                        </TableRow>
+                        ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
                 </div>
+                </div>
             </div>
+            </div>
+
         </>
     );
 };
 
-export default AuditInfo;
+export default MasterData;
 
 
 

@@ -1,11 +1,13 @@
 import { useSidebarStore } from "@/store/sidebar";
 import React from "react";
 import { SidebarItems } from "./items";
-import { useRouter } from "next/navigation";
+import { useRouter,usePathname } from "next/navigation";
+import classNames from "classnames";
 
 export default function Sidebar() {
   const openSidebar = useSidebarStore((state) => state.openSidebar);
   const router = useRouter();
+  const pathname=usePathname();
 
   return (
     <div
@@ -17,7 +19,29 @@ export default function Sidebar() {
         <div className="p-[12px] mt-[16px] text-[16px] text-white font-semibold bg-gray-600 rounded">
           Warehouse Management
         </div>
+
+
         {SidebarItems?.map((item) => {
+          const isActive = pathname === item.path; // bg-red-100 text-White-600 shadow-md rounded Check if the item is active -bg-white/80 text-gray-800 shadow-md rounded
+
+          return (
+            <div key={item.title} className="mt-2">
+              <div
+                onClick={() => router.push(item.path)}
+                className={`text-[14px] p-[16px] cursor-pointer w-full flex items-center gap-2 font-medium ${
+                  isActive
+                    ? "bg-blue-100 text-White-800 shadow-md rounded"
+                    : "text-white hover:bg-white/20 hover:font-semibold"
+                }`}
+              >
+                {item.icon}
+                {item.title}
+              </div>
+            </div>
+          );
+        })}
+
+        {/* {SidebarItems?.map((item) => {
           return (
             <div key={item.title} className="mt-2">
               <div
@@ -29,7 +53,7 @@ export default function Sidebar() {
               </div>
             </div>
           );
-        })}
+        })} */}
       </div>
     </div>
   );

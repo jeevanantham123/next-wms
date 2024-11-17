@@ -23,9 +23,9 @@ export const App = ({ children }) => {
           <Navbar />
           {children}
         </>
-      ) : (
+       ) : (
         <Login />
-      )}
+      )}   
       <Toaster />
       <ReactQueryDevtools />
     </QueryClientProvider>

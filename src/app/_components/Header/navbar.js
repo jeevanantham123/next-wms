@@ -83,14 +83,14 @@ export default function Navbar() {
               />
             </div>
              <div className="flex gap-2 items-center mx-auto">
-             {/* <Button onClick={() => router.push("/wms/dashboard")}>
+             {/* <Button onClick={() => router.push("/wms/dashboard")}>    bg-white/60
                 WMS
               </Button> */}
 
             <button
               onClick={() => handleButtonClick("/wms/dashboard", "WMS")}
               className={`inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors 
-              ${activeButton === "WMS" ? "bg-white text-gray-600 shadow-md" : "bg-primary text-primary-foreground shadow hover:bg-primary/90"}`}
+              ${activeButton === "WMS" ? "bg-blue-100 text-gray-800 shadow-md rounded" : "bg-primary text-primary-foreground shadow hover:bg-primary/90"}`}
                >
               WMS
               </button>
@@ -107,7 +107,7 @@ export default function Navbar() {
               <button
                 onClick={() => handleButtonClick("/auditing/dashboard", "Audit Info")}
                 className={`inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors 
-                  ${activeButton === "Audit Info" ? "bg-white text-gray-600 shadow-md" : "bg-primary text-primary-foreground shadow hover:bg-primary/90"}`}
+                  ${activeButton === "Audit Info" ? "bg-blue-200 text-gray-800 shadow-md" : "bg-primary text-primary-foreground shadow hover:bg-primary/90"}`}
               >
                 Audit Info
               </button>   
@@ -115,7 +115,7 @@ export default function Navbar() {
               <button
                 onClick={() => handleButtonClick("/admin/dashboard", "Authentication")}
                 className={`inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors 
-                  ${activeButton === "Authentication" ? "bg-white text-gray-600 shadow-md" : "bg-primary text-primary-foreground shadow hover:bg-primary/90"}`}
+                  ${activeButton === "Authentication" ? "bg-blue-200 text-gray-800 shadow-md" : "bg-primary text-primary-foreground shadow hover:bg-primary/90"}`}
               >
                 Authentication
               </button>

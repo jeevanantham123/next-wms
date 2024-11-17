@@ -9,12 +9,12 @@ export const SidebarItems = [
   },
   {
     title: "Functional profile",
-    path: "/auditing/dashboard",
+    path: "/auditing/functional-profile",
     icon: <InfoIcon />,
   },
   {
-    title: "Functional auathorisation",
-    path: "/auditing/dashboard",
+    title: "Functional authorization",
+    path: "/auditing/functional-authorization",
     icon: <KeyIcon />,
   },
   {
@@ -28,23 +28,18 @@ export const SidebarItems = [
     icon: <TextIcon />,
   },
   {
-    title: "All",
-    path: "/auditing/dashboard",
-    icon: <ListIcon />,
-  },
-  {
     title: "Login history",
-    path: "/auditing/dashboard",
+    path: "/auditing/login-history",
     icon: <HistoryIcon />,
   },
   {
     title: "DB history",
-    path: "/auditing/dashboard",
+    path: "/auditing/db-history",
     icon: <HistoryIcon />,
   },
   {
     title: "Notifications",
-    path: "/auditing/dashboard",
+    path: "/auditing/notifications",
     icon: <BellIcon />,
   },
 
