@@ -1,5 +1,12 @@
-import React from "react";
+import React from 'react';
+import User from './user';
 
-export default function Dashboard() {
-  return <div>Dashboard</div>;
-}
+const UserPage = () => {
+    return (
+        <div>
+            <User />
+        </div>
+    );
+};
+
+export default UserPage;
