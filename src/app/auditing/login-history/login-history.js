@@ -1,6 +1,14 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import React, { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -10,106 +18,38 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-
-
 import {
-  CaretSortIcon,
   ChevronDownIcon,
-  DotsHorizontalIcon,
 } from "@radix-ui/react-icons";
-
-import dayjs from 'dayjs';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import { blue, blueGrey } from "@mui/material/colors";
-
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
+import { SearchIcon, X } from "lucide-react";
 
-const primaryColor='green';
-// Styles (similar to User.js)
-const inputStyles = {
-  border: "2px solid lightgrey",
-  borderRadius: "4px",
-  width: '150px',
-  height: "40px",
-  transition: "border-color 0.3s",
-  "&:hover": { borderColor: blue },
-  "&:focus": { borderColor: blueGrey },
-};
-const styles = {
-  inputField: {
-      border: '2px solid lightgrey',
-      borderRadius: '4px',
-      width: '150px',
-      height: '40px',
-      transition: 'border-color 0.3s',
-      '&:hover': {
-          borderColor: primaryColor,
-      },
-      '&:focus': {
-          borderColor: primaryColor,
-      }
-  },
-  selectField: {
-    border: '2px solid lightgrey',
-    borderRadius: '4px',
-    width: '150px',
-    height: '40px',
-    transition: 'border-color 0.3s',
-    '&:hover': {
-        borderColor: primaryColor,
-    },
-    '&:focus': {
-        borderColor: primaryColor,
-    }
-},
-};
-
-
+// Column headers and corresponding keys in mockData
 const columns = [
   { header: "User Code", key: "userCode" },
   { header: "Name", key: "name" },
   { header: "Login Date", key: "loginDate" },
 ];
 
+const mockUserData = [
+      { userCode: "U001", name: "John Doe", loginDate: "2024-11-01" },
+      { userCode: "U002", name: "Jane Smith", loginDate: "2024-11-02" },
+      { userCode: "U003", name: "Alex Brown", loginDate: "2024-11-03" },
+    ]
+
+
 function LoginHistory() {
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
   const [filters, setFilters] = useState({
     userCode: "",
-    startDate: null,
-    endDate: null,
   });
   const [visibleColumns, setVisibleColumns] = useState(
     columns.reduce((acc, column) => ({ ...acc, [column.header]: true }), {})
   );
-  const [data, setData] = useState([]);
-
-  // Load sample data
-  useEffect(() => {
-    setData([
-      { userCode: "U001", name: "John Doe", loginDate: "2024-11-01" },
-      { userCode: "U002", name: "Jane Smith", loginDate: "2024-11-02" },
-      { userCode: "U003", name: "Alex Brown", loginDate: "2024-11-03" },
-    ]);
-  }, []);
-
-  const handleFilterChange = (key, value) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const toggleColumnVisibility = (column) => {
-    setVisibleColumns((prev) => ({
-      ...prev,
-      [column]: !prev[column],
-    }));
-  };
+  const data = mockUserData;
+  const [selectedRows, setSelectedRows] = useState([]);
 
   // Filter data based on user code and date range
   const filteredData = data.filter((row) => {
@@ -118,6 +58,50 @@ function LoginHistory() {
     const matchesEndDate = !filters.endDate || dayjs(row.loginDate).isBefore(dayjs(filters.endDate).add(1, 'day'));
     return matchesUserCode && matchesStartDate && matchesEndDate;
   });
+
+
+  const allSelected = filteredData.length > 0 && selectedRows.length === filteredData.length;
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      setSelectedRows([]);
+    } else {
+      setSelectedRows(filteredData.map((row) => row.userCode));
+    }
+  };
+  
+  const handleRowSelection = (userCode) => {
+    setSelectedRows((prevSelectedRows) =>
+      prevSelectedRows.includes(userCode)
+        ? prevSelectedRows.filter((code) => code !== userCode)
+        : [...prevSelectedRows, userCode]
+    );
+  };
+
+
+  const toggleFilterInput = (header) => {
+    setShowFilterInputs((prev) => ({
+      ...prev,
+      [header]: !prev[header],
+    }));
+  };
+
+  // Handle filter change
+  const handleFilterChange = (field, value) => {
+    setFilters((prevFilters) => ({ ...prevFilters, [field]: value }));
+  };
+
+
+
+
+  const toggleColumnVisibility = (column) => {
+    setVisibleColumns((prev) => ({
+      ...prev,
+      [column]: !prev[column],
+    }));
+  };
+
+
 
 
  // Function to convert data to Excel with custom formatting
@@ -243,57 +227,37 @@ const convertToPDF = () => {
 };
 
 
-                
   return (
-    <div style={{ padding: '70px' }}>
-    {/* <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '20px' }}> */}
     <div className="w-full bg-white p-4 rounded-md overflow-hidden shadow-md">
-   <div className="flex gap-2 mb-12 items-center py-4">
-   <LocalizationProvider dateAdapter={AdapterDateFns}>
-                        <DatePicker
-                            label="Start Date"
-                            value={startDate}
-                            onChange={(date) => setStartDate(date)}
-                            slotProps={{
-                                textField: {
-                                    InputProps: { style: { ...styles.inputField } },
-                                    variant: "outlined",
-                                    focused: true,
-                                },
-                            }}
-                        />
-
-                        <DatePicker
-                            label="End Date"
-                            value={endDate}
-                            onChange={(date) => setEndDate(date)}
-                            slotProps={{
-                                textField: {
-                                    InputProps: { style: { ...styles.inputField } },
-                                    variant: "outlined",
-                                    focused: true,
-                                },
-                            }}
-                        />
-                    </LocalizationProvider>
-                    <TextField
-                       label="User Code"
-                       value={filters.userCode}
-                       onChange={(e) => handleFilterChange("userCode", e.target.value)}
-                       variant="outlined"
-                       InputProps={{ style: inputStyles }}
-                   />
+      <div className="flex gap-2 mb-8 items-center py-4">
+        <div className="relative">
+          <Input
+            placeholder="Search User"
+            value={filters.userCode}
+            onChange={(e) => handleFilterChange("userCode", e.target.value)}
+            className="w-fit"
+          />
+          {filters.userCode === "" ?
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <SearchIcon className="h-4 w-4 text-muted-foreground" />
+            </span>
+            :
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <X className="h-4 w-4 text-muted-foreground" onClick={(e) => handleFilterChange("userCode", "")} />
+            </span>
+          }
+        </div>
 
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-
-            <Button variant="outline" className="ml-auto">
+          <DropdownMenuTrigger asChild className="bg-white">
+            <Button variant="outline" className="ml-auto bg-white">
               Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="bg-white">
             {columns.map(({ header }) => (
               <DropdownMenuCheckboxItem
+                className="bg-white"
                 key={header}
                 checked={visibleColumns[header]}
                 onCheckedChange={() => toggleColumnVisibility(header)}
@@ -302,64 +266,61 @@ const convertToPDF = () => {
               </DropdownMenuCheckboxItem>
             ))}
           </DropdownMenuContent>
-          </DropdownMenu>
+        </DropdownMenu>
 
-{/* Dropdown for Download Options */}
-<DropdownMenu>
-            <DropdownMenuTrigger asChild>
-            <Button variant="outline">
+
+        {/* Dropdown for Download Options */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild className="bg-white">
+            <Button variant="outline" className="bg-white">
               Download As <ChevronDownIcon className="ml-2 h-4 w-4" />
             </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={convertToExcel}>Excel Format</DropdownMenuItem>
-              <DropdownMenuItem onClick={convertToPDF}>PDF Format</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="bg-white">
+            <DropdownMenuItem className="bg-white" onClick={convertToExcel}>Excel Format</DropdownMenuItem>
+            <DropdownMenuItem className="bg-white" onClick={convertToPDF}>PDF Format</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
       </div>
-
-      <div style={{ maxHeight: '400px', overflowY: 'auto', overflowX: 'auto' }}> 
       <div className="rounded-md border">
-      <div style={{ textAlign: 'right', float: 'right', marginBottom: '10px' }}>
-        <h3>Row Count: {filteredData.length}</h3>
-      </div>
-
-      <TableContainer component={Paper}>
         <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell padding="checkbox">
-                <Checkbox />
-              </TableCell>
-              {columns.map(({ header }) =>
+          <TableHeader>
+          <TableRow className="bg-white-100 hover:bg-white-200 transition-all">
+          <TableHead className="pr-3 pl-3 py-2">
+          <Checkbox
+            checked={allSelected}
+            onCheckedChange={toggleSelectAll}
+          />
+        </TableHead>
+              {columns.map(({ header, key }) =>
                 visibleColumns[header] ? (
-                  <TableCell key={header} style={{ color: 'grey', whiteSpace: 'nowrap' }}>
-                    {header}
-                  </TableCell>
+                  <TableHead className="font-semibold py-2 px-3" key={header}>{header}</TableHead>
                 ) : null
               )}
             </TableRow>
-          </TableHead>
+          </TableHeader>
           <TableBody>
             {filteredData.map((row, index) => (
-              <TableRow key={index}>
-                <TableCell padding="checkbox">
-                  <Checkbox />
-                </TableCell>
+              <TableRow key={index} className="hover:bg-violet-50 transition-all">
+            <TableCell className="px-3 py-2">
+            <Checkbox
+              checked={selectedRows.includes(row.userCode)}
+              onCheckedChange={() => handleRowSelection(row.userCode)}
+            />
+          </TableCell>
                 {columns.map(({ header, key }) =>
                   visibleColumns[header] ? (
-                    <TableCell key={key}>{row[key]}</TableCell>
+                    <TableCell key={header} className="px-3 py-2">
+                      {row[key]}
+                    </TableCell>
                   ) : null
                 )}
               </TableRow>
             ))}
           </TableBody>
         </Table>
-      </TableContainer>
       </div>
-      </div>
-    </div>
     </div>
   );
 }

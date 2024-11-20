@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
+import { SearchIcon, CrossIcon, X } from "lucide-react";
 import {
   CaretSortIcon,
   ChevronDownIcon,
@@ -287,6 +287,8 @@ export function DataTableDemo({ data }) {
   const [rowSelection, setRowSelection] = useState({});
   const [destinationStatus, setDestinationStatus] = useState("");
 
+  console.log(tableData, 'tableData')
+
   const table = useReactTable({
     data: tableData,
     columns,
@@ -326,40 +328,108 @@ export function DataTableDemo({ data }) {
 
   return (
     <div className="w-full bg-white p-4 rounded-md overflow-hidden shadow-md">
-      <div className="flex gap-2 mb-12 items-center py-4">
-        <Input
-          placeholder="Filter product..."
-          value={table.getColumn("productId")?.getFilterValue() ?? ""}
-          onChange={(event) =>
-            table.getColumn("productId")?.setFilterValue(event.target.value)
+      <div className="flex gap-2 mb-12 items-center py-2">
+        <div className="relative">
+          <Input
+            placeholder="Search product"
+            value={table.getColumn("productId")?.getFilterValue() ?? ""}
+            onChange={(event) =>
+              table.getColumn("productId")?.setFilterValue(event.target.value)
+            }
+            className="w-fit"
+          />
+          {!table.getColumn("productId")?.getFilterValue() ?
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <SearchIcon className="h-4 w-4 text-muted-foreground" />
+            </span>
+            :
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <X className="h-4 w-4 text-muted-foreground" />
+            </span>
           }
-          className="w-fit"
-        />
-        <Input
-          placeholder="Filter status..." // Current status
-          value={table.getColumn("currentStatus")?.getFilterValue() ?? ""}
-          onChange={(event) =>
-            table.getColumn("currentStatus")?.setFilterValue(event.target.value)
+        </div>
+        <div className="relative">
+
+          <Input
+            placeholder="Search status" // Current status
+            value={table.getColumn("currentStatus")?.getFilterValue() ?? ""}
+            onChange={(event) =>
+              table.getColumn("currentStatus")?.setFilterValue(event.target.value)
+            }
+            className="w-fit"
+          />
+          {!table.getColumn("currentStatus")?.getFilterValue() ?
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <SearchIcon className="h-4 w-4 text-muted-foreground" />
+            </span>
+            :
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <X className="h-4 w-4 text-muted-foreground" />
+            </span>
           }
-          className="w-fit"
-        />
-        <Input
-          placeholder="Filter Pallet..."
-          value={table.getColumn("lot")?.getFilterValue() ?? ""}
-          onChange={(event) =>
-            table.getColumn("lot")?.setFilterValue(event.target.value)
+        </div>
+        <div className="relative">
+          <Input
+            placeholder="Search pallet"
+            value={table.getColumn("pallet")?.getFilterValue() ?? ""}
+            onChange={(event) =>
+              table.getColumn("pallet")?.setFilterValue(event.target.value)
+            }
+            className="w-fit"
+          />
+          {!table.getColumn("pallet")?.getFilterValue() ?
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <SearchIcon className="h-4 w-4 text-muted-foreground" />
+            </span>
+            :
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <X className="h-4 w-4 text-muted-foreground" />
+            </span>
           }
-          className="w-fit"
-        />
-        <Input
-          placeholder="Filter Lot..."
-          value={table.getColumn("lot")?.getFilterValue() ?? ""}
-          onChange={(event) =>
-            table.getColumn("lot")?.setFilterValue(event.target.value)
+        </div>
+        <div className="relative">
+
+          <Input
+            placeholder="Search Lot "
+            value={table.getColumn("lot")?.getFilterValue() ?? ""}
+            onChange={(event) =>
+              table.getColumn("lot")?.setFilterValue(event.target.value)
+            }
+            className="w-fit"
+          />
+          {!table.getColumn("lot")?.getFilterValue() ?
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <SearchIcon className="h-4 w-4 text-muted-foreground" />
+            </span>
+            :
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <X className="h-4 w-4 text-muted-foreground" />
+            </span>
           }
-          className="w-fit"
-        />
-        <Button type="submit">Search</Button>
+        </div>
+        <div className="relative">
+
+          <Input
+            placeholder="Destination Status"
+            value={table.getColumn("destination status")?.getFilterValue() ?? ""}
+            onChange={(event) =>
+              table.getColumn("destination status")?.setFilterValue(event.target.value)
+            }
+            className="w-fit"
+          />
+          {!table.getColumn("destination status")?.getFilterValue() ?
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <SearchIcon className="h-4 w-4 text-muted-foreground" />
+            </span>
+            :
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <X className="h-4 w-4 text-muted-foreground" />
+            </span>
+          }
+        </div>
+
+
+        {/* <Button type="submit">Search</Button> */}
 
         {/* <UpdateDialog selectedRows={table.getSelectedRowModel().rows} /> */}
         <DropdownMenu>
@@ -389,7 +459,7 @@ export function DataTableDemo({ data }) {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="flex w-full my-4 gap-4 justify-center items-center">
+      {/* <div className="flex w-full my-4 gap-4 justify-center items-center">
         <Label>Destination Status</Label>
         <Input
           placeholder="status"
@@ -403,7 +473,7 @@ export function DataTableDemo({ data }) {
         <Button type="submit" onClick={handleSubmit}>
           Submit
         </Button>
-      </div>
+      </div> */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -415,9 +485,9 @@ export function DataTableDemo({ data }) {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}

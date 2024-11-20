@@ -3,7 +3,7 @@ import User from './user';
 
 const UserPage = () => {
     return (
-        <div>
+        <div className="container sm:mx-1 p-8">
             <User />
         </div>
     );

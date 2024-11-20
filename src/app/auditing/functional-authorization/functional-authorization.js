@@ -1,7 +1,14 @@
-// FunctionalProfileAuthorization.js
 "use client";
-import React, { useState, useEffect } from "react";
-import { TextField, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import React, { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -11,20 +18,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { blue, blueGrey } from "@mui/material/colors";
 import {
-  CaretSortIcon,
   ChevronDownIcon,
-  DotsHorizontalIcon,
 } from "@radix-ui/react-icons";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
+import { SearchIcon, X } from "lucide-react";
 
 
-
-// Define columns for Functional Profile Authorization
 const columns = [
   { header: "Profile Code", key: "profileCode" },
   { header: "Desc", key: "desc" },
@@ -36,16 +39,19 @@ const columns = [
   { header: "Permissions", key: "permissions" },
 ];
 
-// Styles (similar to User.js)
-const inputStyles = {
-  border: "2px solid lightgrey",
-  borderRadius: "4px",
-  width: '150px',
-  height: "40px",
-  transition: "border-color 0.3s",
-  "&:hover": { borderColor: blue },
-  "&:focus": { borderColor: blueGrey },
-};
+const mockUserData = [
+  { profileCode: "PC001", desc: "Admin", function: "User Management", description: "Manage users", module: "Admin", groupBySite: "Yes", access: "Full", permissions: "Read/Write" },
+  { profileCode: "PC002", desc: "Sales", function: "Order Processing", description: "Process orders", module: "Sales", groupBySite: "No", access: "Limited", permissions: "Read-Only" },
+  { profileCode: "PC003", desc: "Inventory", function: "Stock Management", description: "Manage stock", module: "Inventory", groupBySite: "Yes", access: "Full", permissions: "Read/Write" },
+  { profileCode: "PC004", desc: "Finance", function: "Invoicing", description: "Generate invoices", module: "Finance", groupBySite: "No", access: "Full", permissions: "Read-Only" },
+  { profileCode: "PC005", desc: "Operations", function: "Scheduling", description: "Schedule tasks", module: "Operations", groupBySite: "Yes", access: "Limited", permissions: "Read/Write" },
+  { profileCode: "PC006", desc: "Admin", function: "User Management", description: "Manage users", module: "Admin", groupBySite: "Yes", access: "Full", permissions: "Read/Write" },
+  { profileCode: "PC007", desc: "Sales", function: "Order Processing", description: "Process orders", module: "Sales", groupBySite: "No", access: "Limited", permissions: "Read-Only" },
+  { profileCode: "PC008", desc: "Inventory", function: "Stock Management", description: "Manage stock", module: "Inventory", groupBySite: "Yes", access: "Full", permissions: "Read/Write" },
+  { profileCode: "PC009", desc: "Finance", function: "Invoicing", description: "Generate invoices", module: "Finance", groupBySite: "No", access: "Full", permissions: "Read-Only" },
+  { profileCode: "PC010", desc: "Operations", function: "Scheduling", description: "Schedule tasks", module: "Operations", groupBySite: "Yes", access: "Limited", permissions: "Read/Write" },
+]
+
 
 function FunctionalProfileAuthorization() {
   const [filters, setFilters] = useState({
@@ -55,27 +61,12 @@ function FunctionalProfileAuthorization() {
     columns.reduce((acc, column) => ({ ...acc, [column.header]: true }), {})
   );
 
-  const [data, setData] = useState([]);
+  const data = mockUserData;
+  const [selectedRows, setSelectedRows] = useState([]);
 
-  // Mock data
-  useEffect(() => {
-    setData([
-      { profileCode: "PC001", desc: "Admin", function: "User Management", description: "Manage users", module: "Admin", groupBySite: "Yes", access: "Full", permissions: "Read/Write" },
-      { profileCode: "PC002", desc: "Sales", function: "Order Processing", description: "Process orders", module: "Sales", groupBySite: "No", access: "Limited", permissions: "Read-Only" },
-      { profileCode: "PC003", desc: "Inventory", function: "Stock Management", description: "Manage stock", module: "Inventory", groupBySite: "Yes", access: "Full", permissions: "Read/Write" },
-      { profileCode: "PC004", desc: "Finance", function: "Invoicing", description: "Generate invoices", module: "Finance", groupBySite: "No", access: "Full", permissions: "Read-Only" },
-      { profileCode: "PC005", desc: "Operations", function: "Scheduling", description: "Schedule tasks", module: "Operations", groupBySite: "Yes", access: "Limited", permissions: "Read/Write" },
-      { profileCode: "PC006", desc: "Admin", function: "User Management", description: "Manage users", module: "Admin", groupBySite: "Yes", access: "Full", permissions: "Read/Write" },
-      { profileCode: "PC007", desc: "Sales", function: "Order Processing", description: "Process orders", module: "Sales", groupBySite: "No", access: "Limited", permissions: "Read-Only" },
-      { profileCode: "PC008", desc: "Inventory", function: "Stock Management", description: "Manage stock", module: "Inventory", groupBySite: "Yes", access: "Full", permissions: "Read/Write" },
-      { profileCode: "PC009", desc: "Finance", function: "Invoicing", description: "Generate invoices", module: "Finance", groupBySite: "No", access: "Full", permissions: "Read-Only" },
-      { profileCode: "PC010", desc: "Operations", function: "Scheduling", description: "Schedule tasks", module: "Operations", groupBySite: "Yes", access: "Limited", permissions: "Read/Write" },
-    ]);
-  }, []);
 
-  const handleFilterChange = (field, value) => {
-    setFilters((prevFilters) => ({ ...prevFilters, [field]: value }));
-  };
+
+
 
   const filteredData = data.filter((row) =>
     (!filters.profileCode || row.profileCode.toLowerCase().includes(filters.profileCode.toLowerCase())) &&
@@ -87,6 +78,31 @@ function FunctionalProfileAuthorization() {
     (!filters.access || row.access.toLowerCase().includes(filters.access.toLowerCase())) &&
     (!filters.permissions || row.permissions.toLowerCase().includes(filters.permissions.toLowerCase()))
   );
+
+  const allSelected = filteredData.length > 0 && selectedRows.length === filteredData.length;
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      setSelectedRows([]);
+    } else {
+      setSelectedRows(filteredData.map((row) => row.userCode));
+    }
+  };
+  
+  const handleRowSelection = (userCode) => {
+    setSelectedRows((prevSelectedRows) =>
+      prevSelectedRows.includes(userCode)
+        ? prevSelectedRows.filter((code) => code !== userCode)
+        : [...prevSelectedRows, userCode]
+    );
+  };
+
+
+  // Handle filter change
+  const handleFilterChange = (field, value) => {
+    setFilters((prevFilters) => ({ ...prevFilters, [field]: value }));
+  };
+
 
   const toggleColumnVisibility = (column) => {
     setVisibleColumns((prev) => ({
@@ -217,54 +233,70 @@ const convertToPDF = () => {
 }
 };
 
-
   return (
-    <div style={{ padding: '70px' }}>
-    {/* <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '20px' }}> */}
     <div className="w-full bg-white p-4 rounded-md overflow-hidden shadow-md">
-   <div className="flex gap-2 mb-12 items-center py-4">
-
-    {/* <div style={{ padding: '50px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '40px', marginBottom: '20px' }}> */}
-        <TextField
-          label="Profile Code"
-          value={filters.profileCode}
-          onChange={(e) => handleFilterChange("profileCode", e.target.value)}
-          variant="outlined"
-          InputProps={{ style: inputStyles }}
-        />
-        <TextField
-          label="Desc"
-          value={filters.desc}
-          onChange={(e) => handleFilterChange("desc", e.target.value)}
-          variant="outlined"
-          InputProps={{ style: inputStyles }}
-        />
-        <TextField
-          label="Function"
-          value={filters.function}
-          onChange={(e) => handleFilterChange("function", e.target.value)}
-          variant="outlined"
-          InputProps={{ style: inputStyles }}
-        />
-        <TextField
-          label="Module"
-          value={filters.module}
-          onChange={(e) => handleFilterChange("module", e.target.value)}
-          variant="outlined"
-          InputProps={{ style: inputStyles }}
-        />
-
+      <div className="flex gap-2 mb-8 items-center py-4">
+        <div className="relative">
+          <Input
+            placeholder="Profile Code"
+            value={filters.profileCode}
+            onChange={(e) => handleFilterChange("profileCode", e.target.value)}
+            className="w-fit"
+          />
+          {filters.profileCode === "" ?
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <SearchIcon className="h-4 w-4 text-muted-foreground" />
+            </span>
+            :
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <X className="h-4 w-4 text-muted-foreground" onClick={(e) => handleFilterChange("profileCode", "")} />
+            </span>
+          }
+        </div>
+        <div className="relative">
+          <Input
+            placeholder="Search Function"
+            value={filters.function}
+            onChange={(e) => handleFilterChange("function", e.target.value)}
+            className="w-fit"
+          />
+          {filters.function === "" ?
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <SearchIcon className="h-4 w-4 text-muted-foreground" />
+            </span>
+            :
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <X className="h-4 w-4 text-muted-foreground" onClick={(e) => handleFilterChange("function", "")} />
+            </span>
+          }
+        </div>
+        <div className="relative">
+          <Input
+            placeholder="Search desc.."
+            value={filters.desc}
+            onChange={(e) => handleFilterChange("desc", e.target.value)}
+            className="w-fit"
+          />
+          {filters.desc === "" ?
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <SearchIcon className="h-4 w-4 text-muted-foreground"  />
+            </span>
+            :
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <X className="h-4 w-4 text-muted-foreground" onClick={(e) => handleFilterChange("desc", "")} />
+            </span>
+          }
+        </div>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-
-            <Button variant="outline" className="ml-auto">
+          <DropdownMenuTrigger asChild className="bg-white">
+            <Button variant="outline" className="ml-auto bg-white">
               Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="bg-white">
             {columns.map(({ header }) => (
               <DropdownMenuCheckboxItem
+                className="bg-white"
                 key={header}
                 checked={visibleColumns[header]}
                 onCheckedChange={() => toggleColumnVisibility(header)}
@@ -273,70 +305,66 @@ const convertToPDF = () => {
               </DropdownMenuCheckboxItem>
             ))}
           </DropdownMenuContent>
-          </DropdownMenu>
+        </DropdownMenu>
 
-{/* Dropdown for Download Options */}
-<DropdownMenu>
-            <DropdownMenuTrigger asChild>
-            <Button variant="outline">
+
+        {/* Dropdown for Download Options */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild className="bg-white">
+            <Button variant="outline" className="bg-white">
               Download As <ChevronDownIcon className="ml-2 h-4 w-4" />
             </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={convertToExcel}>Excel Format</DropdownMenuItem>
-              <DropdownMenuItem onClick={convertToPDF}>PDF Format</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="bg-white">
+            <DropdownMenuItem className="bg-white" onClick={convertToExcel}>Excel Format</DropdownMenuItem>
+            <DropdownMenuItem className="bg-white" onClick={convertToPDF}>PDF Format</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
       </div>
-       <div style={{ maxHeight: '400px', overflowY: 'auto', overflowX: 'auto' }}> 
       <div className="rounded-md border">
-
-
-      <div style={{  float:'right', marginBottom:'10px'}}>
-                    {/* <h3>Row Count: {data.length}</h3> */}
-                    <h3>Row Count: {filteredData.length}</h3>
-                </div>
-      <TableContainer component={Paper}>
         <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell padding="checkbox">
-                <Checkbox />
-              </TableCell>
-              {columns.map(({ header }) =>
+          <TableHeader>
+          <TableRow className="bg-white-100 hover:bg-white-200 transition-all">
+          <TableHead className="pr-3 pl-3 py-2">
+          <Checkbox
+            checked={allSelected}
+            onCheckedChange={toggleSelectAll}
+          />
+        </TableHead>
+              {columns.map(({ header, key }) =>
                 visibleColumns[header] ? (
-                  <TableCell key={header} style={{ color: 'grey', whiteSpace: 'nowrap' }}>
-                    {header}
-                  </TableCell>
+                  <TableHead className="font-semibold py-2 px-3" key={header}>{header}</TableHead>
                 ) : null
               )}
             </TableRow>
-          </TableHead>
+          </TableHeader>
           <TableBody>
             {filteredData.map((row, index) => (
-              <TableRow key={index}>
-                <TableCell padding="checkbox">
-                  <Checkbox />
-                </TableCell>
+              <TableRow key={index} className="hover:bg-violet-50 transition-all">
+            <TableCell className="px-3 py-2">
+            <Checkbox
+              checked={selectedRows.includes(row.userCode)}
+              onCheckedChange={() => handleRowSelection(row.userCode)}
+            />
+          </TableCell>
                 {columns.map(({ header, key }) =>
                   visibleColumns[header] ? (
-                    <TableCell key={header}>{row[key]}</TableCell>
+                    <TableCell key={header} className="px-3 py-2">
+                      {row[key]}
+                    </TableCell>
                   ) : null
                 )}
               </TableRow>
             ))}
           </TableBody>
         </Table>
-      </TableContainer>
-      </div>
       </div>
     </div>
-    </div>
-
   );
 }
 
 export default FunctionalProfileAuthorization;
+
 
 
