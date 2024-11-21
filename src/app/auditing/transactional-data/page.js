@@ -1,5 +1,12 @@
-import React from "react";
+import React from 'react';
+import TransactionData from './transactional-data';
 
-export default function Dashboard() {
-  return <div>Dashboard</div>;
-}
+const TransactionDataInfoPage = () => {
+    return (
+        <div>
+            <TransactionData />
+        </div>
+    );
+};
+
+export default TransactionDataInfoPage;

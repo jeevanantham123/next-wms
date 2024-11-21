@@ -1,5 +1,12 @@
-import React from "react";
+import React from 'react';
+import FunctionalProfileAuthorization from './functional-authorization';
 
-export default function Dashboard() {
-  return <div>Dashboard</div>;
-}
+const FunctionalProfileAuthorizationPage = () => {
+    return (
+        <div>
+            <FunctionalProfileAuthorization />
+        </div>
+    );
+};
+
+export default FunctionalProfileAuthorizationPage;

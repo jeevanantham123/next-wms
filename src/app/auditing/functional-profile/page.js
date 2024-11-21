@@ -1,5 +1,13 @@
-import React from "react";
+import React from 'react';
+import FunctionalProfile from './functional-profile';
 
-export default function Dashboard() {
-  return <div>Dashboard</div>;
-}
+const FunctionalProfilePage = () => {
+    return (
+        <div>
+            <FunctionalProfile />
+        </div>
+    );
+};
+
+export default FunctionalProfilePage;
+

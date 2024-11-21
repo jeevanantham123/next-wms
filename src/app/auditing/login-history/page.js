@@ -1,5 +1,12 @@
-import React from "react";
+import React from 'react';
+import LoginHistory from './login-history';
 
-export default function Dashboard() {
-  return <div>Dashboard</div>;
-}
+const LoginHistoryPage = () => {
+    return (
+        <div>
+            <LoginHistory />
+        </div>
+    );
+};
+
+export default LoginHistoryPage;

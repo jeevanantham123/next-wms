@@ -1,5 +1,12 @@
-import React from "react";
+import React from 'react';
+import MasterData from './master-data';
 
-export default function Dashboard() {
-  return <div>Dashboard</div>;
-}
+const MasterDataInfoPage = () => {
+    return (
+        <div>
+            <MasterData />
+        </div>
+    );
+};
+
+export default MasterDataInfoPage;
