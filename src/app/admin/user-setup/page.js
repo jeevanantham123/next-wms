@@ -28,7 +28,7 @@ export default function UserSetup() {
     );
 
   return (
-    <div className="container min-h-screen sm:mx-auto p-4 pt-[40px]">
+    <div className="container px-0 min-h-screen mx-auto py-[40px]">
       <UserDatatable refetch={refetch} data={data?.data} />
     </div>
   );

@@ -48,7 +48,7 @@ export default function DeleteUserModal({ refetch, row }) {
           className="cursor-pointer"
           onClick={() => setDialogOpen(true)}
         >
-          <TrashIcon />
+          <TrashIcon className="h-[24px] ml-2 w-[24px]" />
         </div>
       </DialogTrigger>
       <DialogContent>
