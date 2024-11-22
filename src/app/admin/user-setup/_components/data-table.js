@@ -101,7 +101,7 @@ export function UserDatatable({ data, refetch }) {
           {row.getValue("permissions")?.map((permission) => (
             <Badge
               key={permission}
-              className="rounded-full bg-theme/10 text-theme text-[12px] h-[22px]"
+              className="rounded-full font-normal bg-theme/10 text-theme text-[12px] h-[22px]"
             >
               {permission.name}
             </Badge>
@@ -220,7 +220,7 @@ export function UserDatatable({ data, refetch }) {
             onChange={(event) =>
               table.getColumn("email")?.setFilterValue(event.target.value)
             }
-            className="w-[400px] h-[44px]"
+            className="w-[400px] h-[44px] border border-theme"
           />
         </div>
       </div>
