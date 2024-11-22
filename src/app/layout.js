@@ -14,7 +14,9 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={commissioner.className}>
         <div className="bg-[#F4F7FF] w-[100%] h-[100%]">
-          <App>{children}</App>
+          <App>
+            {children}
+          </App>
         </div>
       </body>
     </html>

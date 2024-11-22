@@ -1,5 +1,8 @@
 "use client";
 import { useState } from "react";
+import { useQuery } from '@apollo/client';
+import { GET_PRODUCT_SITE_DATA } from '../../../../queries/graph-api';
+import client from '../../../../lib/apollo-client';;
 
 import { Cross2Icon, Pencil1Icon } from "@radix-ui/react-icons";
 import {
@@ -34,8 +37,8 @@ import { Label } from "@/components/ui/label";
 const ToggleStatus = ({ row, refetch }) => {
   const statusChange = useMutation({
     mutationFn: (userDetails) => put("/admin/users/status-change", userDetails),
-    onSuccess: (data) => {
-      if (data.success) {
+    onSuccess: (userdata) => {
+      if (userdata.success) {
         toast("Status updated!", {
           action: {
             label: <Cross2Icon className="rounded-full" />,
@@ -70,15 +73,24 @@ const ToggleStatus = ({ row, refetch }) => {
   );
 };
 
-export function UserDatatable({ data, refetch }) {
-  //   const [tableData, setTableData] = useState(data);
+export function UserDatatable({ userdata, refetch }) {
+  //   const [tableData, setTableData] = useState(userdata);
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const [destinationStatus, setDestinationStatus] = useState("");
   const router = useRouter();
+  // const { loading, error, data } = useQuery(GET_PRODUCT_SITE_DATA, {
+  //   variables: { offset: 0, count: 10 },
+  // });
 
+  // if (loading) return <p>Loading...</p>;
+  // if (error) return <p>Error: {error.message}</p>;
+
+  // console.log(data,'data')
+
+  // debugger
   const columns = [
     {
       accessorKey: "userName",
@@ -135,7 +147,7 @@ export function UserDatatable({ data, refetch }) {
   ];
 
   const table = useReactTable({
-    data,
+    userdata,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -215,7 +227,7 @@ export function UserDatatable({ data, refetch }) {
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
+                  userdata-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
