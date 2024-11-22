@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* app/globals.css */
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;700&display=swap');
+
+.lexend-font {
+  font-family: 'Lexend', sans-serif;
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -73,4 +80,11 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* user-edit */
+.profileImg{
+  height: 120px;
+  width: 120px;
+  margin-top: 10px;
 }
