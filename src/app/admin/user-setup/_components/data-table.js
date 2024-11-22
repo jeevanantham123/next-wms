@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-import { Cross2Icon, Pencil1Icon } from "@radix-ui/react-icons";
+import { Cross2Icon, DownloadIcon, Pencil1Icon } from "@radix-ui/react-icons";
 import {
   flexRender,
   getCoreRowModel,
@@ -28,8 +28,8 @@ import { put } from "@/api";
 import { toast } from "sonner";
 import DeleteUserModal from "./delete-user";
 import { useRouter } from "next/navigation";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 const ToggleStatus = ({ row, refetch }) => {
   const statusChange = useMutation({
@@ -78,6 +78,7 @@ export function UserDatatable({ data, refetch }) {
   const [rowSelection, setRowSelection] = useState({});
   const [destinationStatus, setDestinationStatus] = useState("");
   const router = useRouter();
+  const [filterStatus, setFilterStatus] = useState("all");
 
   const columns = [
     {
@@ -96,11 +97,15 @@ export function UserDatatable({ data, refetch }) {
       accessorKey: "permissions",
       header: "Permissions",
       cell: ({ row }) => (
-        <div className="">
-          {row
-            .getValue("permissions")
-            ?.map((permission) => permission.name)
-            ?.join(",")}
+        <div className="flex justify-start gap-1 flex-wrap items-center">
+          {row.getValue("permissions")?.map((permission) => (
+            <Badge
+              key={permission}
+              className="rounded-full bg-theme/10 text-theme text-[12px] h-[22px]"
+            >
+              {permission.name}
+            </Badge>
+          ))}
         </div>
       ),
     },
@@ -117,17 +122,17 @@ export function UserDatatable({ data, refetch }) {
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <div className="flex gap-2">
-            <Button
+          <div className="flex divide-x cursor-pointer">
+            <div
               onClick={() =>
                 router.push(`/admin/user-setup/${row.original.id}`)
               }
             >
-              <Pencil1Icon />
-            </Button>
-            <Button variant="destructive" className="">
+              <Pencil1Icon className="h-[24px] w-[24px] mr-2" />
+            </div>
+            <div className="">
               <DeleteUserModal refetch={refetch} row={row.original} />
-            </Button>
+            </div>
           </div>
         );
       },
@@ -155,7 +160,59 @@ export function UserDatatable({ data, refetch }) {
 
   return (
     <div className="w-full bg-white p-4 rounded-md overflow-hidden shadow-md">
-      <div className="flex justify-between mb-12 items-center py-4">
+      <div className="flex my-[14px] items-center justify-between">
+        <div>
+          <div className="text-pt font-medium flex items-center justify-start text-[18px]">
+            Total User
+            <Badge className="ml-2 bg-theme/10 h-[20px] text-theme text-[12px]">
+              240+
+            </Badge>
+          </div>
+          <div className="text-st text-[14px]">
+            Keep track of User and their security ratings.
+          </div>
+        </div>
+        <Button>
+          <DownloadIcon className="mr-2" />
+          Export Data
+        </Button>
+      </div>
+      <div className="flex justify-between mb-[12px] items-center py-4">
+        <div className="flex justify-center overflow-hidden  items-center border rounded-md border-theme">
+          <div
+            className={cn(
+              "h-[40px] cursor-pointer w-[80px] border-r border-theme justify-center flex items-center",
+              {
+                "bg-theme text-white": filterStatus === "all",
+              }
+            )}
+            onClick={() => setFilterStatus("all")}
+          >
+            All
+          </div>
+          <div
+            className={cn(
+              "h-[40px] cursor-pointer w-[80px] border-r border-theme justify-center flex items-center",
+              {
+                "bg-theme text-white": filterStatus === "active",
+              }
+            )}
+            onClick={() => setFilterStatus("active")}
+          >
+            Active
+          </div>
+          <div
+            className={cn(
+              "h-[40px] cursor-pointer w-[80px] justify-center flex items-center",
+              {
+                "bg-theme text-white": filterStatus === "inactive",
+              }
+            )}
+            onClick={() => setFilterStatus("inactive")}
+          >
+            Inactive
+          </div>
+        </div>
         <div className="flex gap-2">
           <Input
             placeholder="Search user..."
@@ -163,36 +220,14 @@ export function UserDatatable({ data, refetch }) {
             onChange={(event) =>
               table.getColumn("email")?.setFilterValue(event.target.value)
             }
-            className="w-[250px]"
+            className="w-[400px] h-[44px]"
           />
-          <Button className="ml-2">Search</Button>
         </div>
-        <div className="flex ml-[24px]">
-          {/* <div className="font-semibold">Filter users</div> */}
-          <RadioGroup defaultValue="all" className="flex gap-4">
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="all" id="all" />
-              <Label htmlFor="all">All</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="active" id="active" />
-              <Label htmlFor="active">Active</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="inactive" id="inactive" />
-              <Label htmlFor="inactive">Inactive</Label>
-            </div>
-          </RadioGroup>
-        </div>
-        {/* <div className="flex gap-4">
-          <AddPermissionModal refetch={refetch} />
-          <AddUserModal refetch={refetch} />
-        </div> */}
       </div>
 
       <div className="rounded-md border">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-[#F9FAFB]">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {

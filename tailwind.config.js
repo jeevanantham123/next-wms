@@ -30,6 +30,8 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
+        pt: "#181D27", //Primary text color
+        st: "#535862", // Secondary text color
         theme: "#6f42c1",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
