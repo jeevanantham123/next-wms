@@ -1,8 +1,12 @@
 import { App } from "./_components/App";
 import "./globals.css";
-import { Inter } from "next/font/google";
+import { Lexend } from "next/font/google";
 
-const commissioner = Inter({ subsets: ["latin"] });
+const lexend = Lexend({
+  subsets: ["latin"],
+  weight: ["100", "200", "400", "500", "600", "700", "800"],
+  preload: true,
+});
 
 export const metadata = {
   title: "WMS",
@@ -12,13 +16,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className={commissioner.className}>
+      <body className={lexend.className}>
         <div className="bg-[#F4F7FF] w-[100%] h-[100%]">
           <App>{children}</App>
         </div>
