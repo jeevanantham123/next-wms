@@ -48,7 +48,6 @@ const UserPage =  ({ params }) => {
         <AccessControl />
 
       </div>
-    </div>
   );
 };
 
