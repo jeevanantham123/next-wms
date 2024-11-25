@@ -10,7 +10,7 @@ export default function Navbar() {
   const [openNavMenu, setOpenNavMenu] = useState(false);
   const setOpenSidebar = useSidebarStore((state) => state.setOpenSidebar);
   const openSidebar = useSidebarStore((state) => state.openSidebar);
-  const isAdmin = true
+  const isAdmin = true;
   const router = useRouter();
   const pathName = usePathname();
 
@@ -20,7 +20,7 @@ export default function Navbar() {
       authorizedUser: false,
       userPermissions: [],
     });
-    router.refresh();
+    window.location.reload();
   };
 
   return (
@@ -78,7 +78,7 @@ export default function Navbar() {
                 alt="Your Company"
                 onClick={() => setOpenSidebar(!openSidebar)}
               />
-              {!isAdmin &&
+              {!isAdmin && (
                 <div className="flex flex-1 w-full gap-2 justify-center items-center ml-6">
                   <Button
                     variant={pathName.includes("wms") ? "default" : "outline"}
@@ -101,7 +101,7 @@ export default function Navbar() {
                     Authentication
                   </Button>
                 </div>
-              }
+              )}
             </div>
 
             <div className="hidden">

@@ -1,10 +1,13 @@
 "use client";
 import { useState } from "react";
-import { Heading } from "@/components/ui/heading";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FormProvider } from "react-hook-form"; // Ensure this import
 import { z } from "zod";
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import {
   FormField,
@@ -14,15 +17,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import DragDropComponent from "./DragAndDrop";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
-import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -30,6 +29,9 @@ const formSchema = z.object({
   }),
   lastname: z.string().min(2, {
     message: "Lastname must be at least 2 characters.",
+  }),
+  gender: z.string().min(2, {
+    message: "Gender must be at least 3 characters.",
   }),
   email: z
     .string()
@@ -41,6 +43,9 @@ const formSchema = z.object({
   }),
 
   roleId: z.string().min(1, { message: "This field has to be filled." }),
+  dob: z.date({
+    required_error: "A date of birth is required.",
+  }),
 });
 const roles = [
   { id: 1, name: "Distributor" },
@@ -203,6 +208,7 @@ const UserEditForm = ({ userDetails }) => {
     defaultValues: {
       username: userDetails?.userName || "",
       lastname: userDetails?.userName || "",
+      gender: "male",
       email: userDetails?.email || "",
       phonenumber: "6380055351" || "",
       roleId: "",
@@ -294,422 +300,183 @@ const UserEditForm = ({ userDetails }) => {
   }
 
   return (
-    <>
-      <div className="flex items-center mb-[30px] px-4 justify-between">
-        <Heading title="Edit User" />
-        <div>
-          <Button
-            type="submit"
-            className="bg-green-600 hover:bg-green-600 h-[42px] w-[110px] text-[16px]"
-          >
-            Save
-          </Button>
-          {/* {userDetails && (
-            <Button variant="destructive" size="sm">
-              <Trash className="h-4 w-4" />
-            </Button>
-          )} */}
+    <div className="flex flex-col rounded-md border border-[#EAECF0]">
+      <div className="w-90  bg-white lexend-font border-b border-[#EAECF0]">
+        <div className="flex h-[60px] px-[16px] justify-between items-center">
+          <span className="flex items-center text-[18px] text-pt font-medium">
+            Edit User Details
+          </span>
+          <Button>Save & Update</Button>
         </div>
       </div>
-
-      <FormProvider {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 w-full pl-8"
-        >
-          <div className="flex border-b pb-[16px] justify-between items-center">
-            <div className="grid grid-cols-2 grid-rows-3 min-w-[500px] gap-8">
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Firstname</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="bg-white"
-                        placeholder="Enter username"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+      <div className="w-90 bg-white p-2 lexend-font">
+        <div className="p-2 flex">
+          <div className="w-[15%]">
+            <span className="text-[16px]">Profile Image</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://picsum.photos/200/200"
+              className="profileImg rounded-sm"
+              alt="avatar"
+            />
+          </div>
+          <div className="w-[15%] ">
+            <span className="text-sm">User Status</span>
+            <div className="grid mr-12 grid-cols-2 gap-2 grid-rows-2 mt-6">
+              <Switch
+                checked={useractive}
+                onCheckedChange={() => handleStatusChange(!useractive)}
               />
-              <FormField
-                control={form.control}
-                name="lastname"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Lastname</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="bg-white"
-                        placeholder="Enter lastname"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+              <h4>Active</h4>
+              <Switch
+                checked={holdStatus}
+                onCheckedChange={() => handleHoldChange(!holdStatus)}
               />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="bg-white"
-                        placeholder="Enter email"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="phonenumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="bg-white"
-                        placeholder="Enter phone number"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="roleId"
-                className="bg-white"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Role</FormLabel>
-                    <Select
-                      onValueChange={(value) => {
-                        field.onChange(value); // Update the form state
-                        setUserRole(value); // Update the selectedRole state
-                      }} // Update the form state
-                      value={field.value} // Set the current value
-                      className="bg-white"
-                    >
-                      <FormControl>
-                        <SelectTrigger className="bg-white">
-                          <SelectValue
+              <h4>Hold</h4>
+            </div>
+          </div>
+          {/* form */}
+          <FormProvider {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="w-[70%]">
+              <div className="flex ">
+                <div className="grid grid-cols-3 grid-rows-2 min-w-[500px] gap-8">
+                  <FormField
+                    control={form.control}
+                    name="username"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Firstname</FormLabel>
+                        <FormControl>
+                          <Input
                             className="bg-white"
-                            placeholder="Select a role"
+                            placeholder="Enter username"
+                            {...field}
                           />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="bg-white">
-                        {roles.map((role) => (
-                          <SelectItem
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="lastname"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Lastname</FormLabel>
+                        <FormControl>
+                          <Input
                             className="bg-white"
-                            key={role.id}
-                            value={String(role.name)}
+                            placeholder="Enter lastname"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="gender"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Gender</FormLabel>
+                        <FormControl>
+                          <Input
+                            className="bg-white"
+                            placeholder="Enter Gender"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="dob"
+                    render={({ field }) => (
+                      <FormItem className="flex mt-[10px] flex-col bg-white">
+                        <FormLabel>Date of birth</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "w-[240px]  bg-white",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP")
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-auto p-0 bg-white"
+                            align="start"
                           >
-                            {role.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {userrole == "Sales representative" && (
-                <FormField
-                  control={form.control}
-                  name="Sales rep code"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Sales Rep code</FormLabel>
-                      <FormControl>
-                        <Input
-                          className="bg-white"
-                          placeholder="Enter Sales rep code"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-            </div>
-            <div className="flex items-center">
-              <div className="grid gap-4 mr-6 grid-cols-2 grid-rows-2">
-                <h4>Active</h4>
-                <Switch
-                  checked={useractive}
-                  onCheckedChange={() => handleStatusChange(!useractive)}
-                />
-                <h4>Hold</h4>
-                <Switch
-                  checked={holdStatus}
-                  onCheckedChange={() => handleHoldChange(!holdStatus)}
-                />
-              </div>
-              <div className="flex flex-col justify-center items-center">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="https://picsum.photos/200/200"
-                  className="rounded-full"
-                  alt="avatar"
-                />
-                <Button variant="outline" className="mt-[14px]">
-                  Edit Profile Picture
-                </Button>
-              </div>
-            </div>
-          </div>
-          <div className="mt-16 space-y-8">
-            {/* <label className="py-3 text-lg font-semibold text-gray-700">
-              Company
-            </label>
-            <div className="flex flex-wrap gap-3 mt-2">
-              {companies.map((company, index) => (
-                <div key={index} className="px-2">
-                  {userCompany.some(
-                    (userComp) => userComp.name === company.name
-                  ) ? (
-                    <div
-                      className="flex"
-                      onClick={() => removeCompany(company.name)}
-                      title="Click to remove company"
-                    >
-                      <Badge
-                        variant="outline"
-                        className="bg-gradient-to-r bg-theme text-white shadow-lg p-2 cursor-pointer rounded-lg transition-all duration-300 transform hover:scale-105"
-                      >
-                        {company.name}
-                      </Badge>
-                    </div>
-                  ) : (
-                    <div
-                      onClick={() => addCompany(company.name)}
-                      title="Click to add company"
-                    >
-                      <Badge
-                        variant="outline"
-                        className="border border-gray-300 text-gray-600 p-2 cursor-pointer rounded-lg hover:border-gray-400 hover:text-gray-800 transition-all duration-200"
-                      >
-                        {company.name}
-                      </Badge>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-10">
-              <label className="py-3 text-lg font-semibold text-gray-700">
-                Company Sites
-              </label>
-              <div className="flex flex-col gap-6 mt-4">
-                {companies.map((company, companyIndex) => {
-                  const userComp = userCompany.find(
-                    (userComp) => userComp.name === company.name
-                  );
-                  if (!userComp) return null;
-
-                  return (
-                    <div
-                      key={companyIndex}
-                      className="p-4 bg-gray-100 rounded-lg shadow-sm"
-                    >
-                      <div className="font-bold text-gray-700 text-lg mb-2 border-b-2 border-gray-300 pb-2">
-                        {company.name}
-                      </div>
-
-                      <div className="flex flex-wrap gap-3 mt-2">
-                        {company.sites.map((sitename, siteIndex) => {
-                          const isUserSite =
-                            userComp && userComp.sites.includes(sitename);
-
-                          return (
-                            <div
-                              key={`${companyIndex}-${siteIndex}`}
-                              onClick={() =>
-                                isUserSite
-                                  ? removeCompanySite(company.name, sitename)
-                                  : addCompanySite(company.name, sitename)
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) =>
+                                date > new Date() ||
+                                date < new Date("1900-01-01")
                               }
-                              title={
-                                isUserSite
-                                  ? "Click to deselect site"
-                                  : "Click to select site"
-                              }
-                            >
-                              <Badge
-                                variant="outline"
-                                className={`border p-2 cursor-pointer rounded-lg transition-all duration-200 
-                                                        ${
-                                                          isUserSite
-                                                            ? "bg-theme text-white shadow-md hover:scale-105"
-                                                            : "border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105"
-                                                        }`}
-                              >
-                                {sitename}
-                              </Badge>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-10 px-4">
-            <label className="py-3 text-lg font-semibold text-gray-700">
-              Modules
-            </label>
-            <div className="flex flex-wrap gap-3 mt-2">
-              {modules.map((module, index) => (
-                <div key={index} className="px-2">
-                  {userModules.some(
-                    (userMod) => userMod.name === module.name
-                  ) ? (
-                    <div
-                      className="flex"
-                      onClick={() => removeModule(module.name)}
-                    >
-                      <Badge
-                        variant="outline"
-                        className="bg-gradient-to-r bg-theme text-white shadow-md p-2 cursor-pointer rounded-lg transition-all duration-300 transform hover:scale-105"
-                      >
-                        {module.name}
-                      </Badge>
-                    </div>
-                  ) : (
-                    <div onClick={() => addModule(module.name)}>
-                      <Badge
-                        variant="outline"
-                        className="border border-gray-300 text-gray-600 p-2 cursor-pointer rounded-lg hover:border-gray-400 hover:text-gray-800 transition-all duration-200"
-                      >
-                        {module.name}
-                      </Badge>
-                    </div>
-                  )}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            className="bg-white"
+                            placeholder="Enter email"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phonenumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <Input
+                            className="bg-white"
+                            placeholder="Enter phone number"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
-              ))}
-            </div>
-
-            <div className="mt-10">
-              <label className="py-3 text-lg font-semibold text-gray-700">
-                Transactions
-              </label>
-              <div className="flex flex-col gap-4 mt-3">
-                {modules.map((module, moduleIndex) => {
-                  const userMod = userModules.find(
-                    (userMod) => userMod.name === module.name
-                  );
-                  if (!userMod) return null;
-
-                  return (
-                    <div key={moduleIndex} className="flex items-center gap-4">
-                      <div className="font-bold text-gray-700">
-                        {module.name}
-                      </div>
-
-                      <div className="flex gap-2 ml-4 flex-wrap">
-                        {module.transactions.map(
-                          (transaction, transactionIndex) => {
-                            const isUserTransaction =
-                              userMod &&
-                              userMod.transactions.includes(transaction);
-
-                            return (
-                              <div
-                                key={`${moduleIndex}-${transactionIndex}`}
-                                onClick={() =>
-                                  isUserTransaction
-                                    ? removeModuleTransaction(
-                                        module.name,
-                                        transaction
-                                      )
-                                    : addModuleTransaction(
-                                        module.name,
-                                        transaction
-                                      )
-                                }
-                              >
-                                <Badge
-                                  variant="outline"
-                                  className={`border p-2 cursor-pointer rounded-lg transition-all duration-200 
-                                                        ${
-                                                          isUserTransaction
-                                                            ? "bg-theme text-white shadow-md"
-                                                            : "border-gray-300 text-gray-600 hover:border-gray-400 hover:text-gray-800"
-                                                        }`}
-                                >
-                                  {transaction}
-                                </Badge>
-                              </div>
-                            );
-                          }
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
               </div>
-            </div> */}
-            <div className="flex items-center justify-start gap-8">
-              <DragDropComponent title={"Companies"} dropItems={DaDcompanies} />
-              <DragDropComponent title={"Sites"} dropItems={DaSites} />
-            </div>
-
-            {/* <div className="flex items-center justify-start gap-4">
-              <DragDropComponent title={"Roles"} dropItems={DaRoles} />
-              <DragDropComponent
-                title={"Permissions"}
-                dropItems={DaPermissions}
-              />
-            </div> */}
-            <div className="flex items-center justify-start gap-8">
-              <DragDropComponent title={"Modules"} dropItems={DaModules} />
-              <DragDropComponent
-                title={"Transactions"}
-                dropItems={DaTransactions}
-              />
-            </div>
-            <div>
-              <DragDropComponent title={"Folders"} dropItems={DaFolders} />
-            </div>
-          </div>
-          <div className="pt-[16px] text-[14px] font-bold border-t">
-            Master Data Enable
-          </div>
-          <div className="grid grid-cols-4 gap-2 grid-rows-3">
-            <h2>Product Category</h2>
-            <Checkbox />
-            <h2>Product</h2>
-            <Checkbox />
-            <h2>BOM</h2>
-            <Checkbox />
-            <h2>Routing</h2>
-            <Checkbox />
-            <h2>Location Type</h2>
-            <Checkbox />
-            <h2>Location</h2>
-            <Checkbox />
-          </div>
-        </form>
-      </FormProvider>
-    </>
+            </form>
+          </FormProvider>
+        </div>
+      </div>
+    </div>
   );
 };
 
