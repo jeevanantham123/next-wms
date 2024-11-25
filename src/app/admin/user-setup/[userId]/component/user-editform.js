@@ -1,14 +1,13 @@
 "use client";
 import { useState } from "react";
-import { Heading } from "@/components/ui/heading";
-import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
-import { Calendar } from "@/components/ui/calendar"
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FormProvider } from "react-hook-form"; // Ensure this import
 import { z } from "zod";
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import {
   FormField,
@@ -16,23 +15,13 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
-  FormDescription
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import DragDropComponent from "./DragAndDrop";
+} from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
-import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -219,7 +208,7 @@ const UserEditForm = ({ userDetails }) => {
     defaultValues: {
       username: userDetails?.userName || "",
       lastname: userDetails?.userName || "",
-      gender: 'male',
+      gender: "male",
       email: userDetails?.email || "",
       phonenumber: "6380055351" || "",
       roleId: "",
@@ -255,9 +244,9 @@ const UserEditForm = ({ userDetails }) => {
       prevUserCompany.map((userComp) =>
         userComp.name === companyname
           ? {
-            ...userComp,
-            sites: userComp.sites.filter((site) => site !== sitename),
-          }
+              ...userComp,
+              sites: userComp.sites.filter((site) => site !== sitename),
+            }
           : userComp
       )
     );
@@ -281,9 +270,9 @@ const UserEditForm = ({ userDetails }) => {
       prevUserModules.map((module) =>
         module.name === moduleName
           ? {
-            ...module,
-            transactions: [...module.transactions, transactionName],
-          }
+              ...module,
+              transactions: [...module.transactions, transactionName],
+            }
           : module
       )
     );
@@ -294,11 +283,11 @@ const UserEditForm = ({ userDetails }) => {
       prevUserModules.map((module) =>
         module.name === moduleName
           ? {
-            ...module,
-            transactions: module.transactions.filter(
-              (transaction) => transaction !== transactionName
-            ),
-          }
+              ...module,
+              transactions: module.transactions.filter(
+                (transaction) => transaction !== transactionName
+              ),
+            }
           : module
       )
     );
@@ -311,17 +300,20 @@ const UserEditForm = ({ userDetails }) => {
   }
 
   return (
-    <>
-      <div className="w-90  bg-white p-2 lexend-font rounded">
-        <div className="flex justify-between">
-          <span className="flex items-center">Edit User Details</span>
+    <div className="flex flex-col rounded-md border border-[#EAECF0]">
+      <div className="w-90  bg-white lexend-font border-b border-[#EAECF0]">
+        <div className="flex h-[60px] px-[16px] justify-between items-center">
+          <span className="flex items-center text-[18px] text-pt font-medium">
+            Edit User Details
+          </span>
           <Button>Save & Update</Button>
         </div>
       </div>
-      <div className="w-90  bg-white p-2 lexend-font rounded">
+      <div className="w-90 bg-white p-2 lexend-font">
         <div className="p-2 flex">
           <div className="w-[15%]">
-            <span className="text-sm">Profile Image</span>
+            <span className="text-[16px]">Profile Image</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="https://picsum.photos/200/200"
               className="profileImg rounded-sm"
@@ -341,15 +333,11 @@ const UserEditForm = ({ userDetails }) => {
                 onCheckedChange={() => handleHoldChange(!holdStatus)}
               />
               <h4>Hold</h4>
-
             </div>
           </div>
           {/* form */}
           <FormProvider {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="w-[70%]"
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="w-[70%]">
               <div className="flex ">
                 <div className="grid grid-cols-3 grid-rows-2 min-w-[500px] gap-8">
                   <FormField
@@ -428,13 +416,17 @@ const UserEditForm = ({ userDetails }) => {
                               </Button>
                             </FormControl>
                           </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0 bg-white" align="start">
+                          <PopoverContent
+                            className="w-auto p-0 bg-white"
+                            align="start"
+                          >
                             <Calendar
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
                               disabled={(date) =>
-                                date > new Date() || date < new Date("1900-01-01")
+                                date > new Date() ||
+                                date < new Date("1900-01-01")
                               }
                               initialFocus
                             />
@@ -482,10 +474,9 @@ const UserEditForm = ({ userDetails }) => {
               </div>
             </form>
           </FormProvider>
-
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
