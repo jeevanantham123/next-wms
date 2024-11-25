@@ -85,13 +85,13 @@ export function UserDatatable({ data, refetch }) {
       accessorKey: "userName",
       header: "Username",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("userName")}</div>
+        <div className="">{row.original.nom_name}</div>
       ),
     },
     {
       accessorKey: "email",
       header: "Email",
-      cell: ({ row }) => <div className="">{row.getValue("email")}</div>,
+      cell: ({ row }) => <div className="">{row.original.email_address}</div>,
     },
     {
       accessorKey: "permissions",
@@ -125,7 +125,7 @@ export function UserDatatable({ data, refetch }) {
           <div className="flex divide-x cursor-pointer">
             <div
               onClick={() =>
-                router.push(`/admin/user-setup/${row.original.id}`)
+                router.push(`/admin/user-setup/${row.original.code}`)
               }
             >
               <Pencil1Icon className="h-[24px] w-[24px] mr-2" />

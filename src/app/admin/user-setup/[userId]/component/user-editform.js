@@ -191,6 +191,7 @@ const modules = [
   },
 ];
 const UserEditForm = ({ userDetails }) => {
+  console.log(userDetails,"userDetails")
   const [userCompany, setUserCompany] = useState([
     { name: "Company 1", sites: ["Site 1", "Site 2"] },
     {
@@ -217,10 +218,10 @@ const UserEditForm = ({ userDetails }) => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: userDetails?.userName || "",
-      lastname: userDetails?.userName || "",
+      username: userDetails[0]?.nom_name || "",
+      lastname: userDetails[0]?.nom_name || "",
       gender: 'male',
-      email: userDetails?.email || "",
+      email: userDetails[0]?.email_address || "",
       phonenumber: "6380055351" || "",
       roleId: "",
     },

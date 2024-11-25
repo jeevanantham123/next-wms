@@ -5,6 +5,7 @@ import Navbar from "../Header/navbar";
 import { useAuthStore } from "@/store/auth";
 import Login from "../Login";
 import { Toaster } from "@/components/ui/sonner";
+import UrqlWrapper from "../UrqlWrapper";
 
 const queryClient = new QueryClient();
 
@@ -12,6 +13,7 @@ export const App = ({ children }) => {
   const authorizedUser = useAuthStore((state) => state.authorizedUser);
 
   return (
+  <UrqlWrapper>
     <QueryClientProvider client={queryClient}>
       {authorizedUser ? (
         <>
@@ -24,5 +26,6 @@ export const App = ({ children }) => {
       <Toaster />
       <ReactQueryDevtools />
     </QueryClientProvider>
+  </UrqlWrapper> 
   );
 };

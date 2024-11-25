@@ -1,25 +1,28 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { Cross2Icon } from "@radix-ui/react-icons";
+import { useQuery, gql } from '@urql/next';
 import { LoadingSpinner } from "@/components/ui/loader";
-import { get } from "@/api";
 import { UserDatatable } from "./_components/data-table";
+import { useEffect } from 'react';
+import { useAuthStore } from "@/store/auth";
+import { GET_USER_DATA } from '@/lib/graphqlQueries';
+
 
 export default function UserSetup() {
-  const { isLoading, error, isError, data, refetch } = useQuery({
-    queryKey: ["get-users-list"],
-    queryFn: () => get("/admin/users"),
-  });
+  const offset = 0; 
+  const count = 10;
 
-  if (isError && !isLoading) {
-    toast("Error fetching user list!", {
-      action: {
-        label: <Cross2Icon className="rounded-full" />,
-      },
-    });
-    console.error("User fetching error", error);
-  }
+   const [result, refetch] = useQuery({ query: GET_USER_DATA, variables: { offset, count }, });
+   const { body,data, fetching: isLoading, error: isError } = result;
+
+
+  useEffect(() => {
+    refetch(); 
+  }, [offset, count, refetch]);
+
+  useEffect(()=>{
+    useAuthStore.setState({ userData: data?.get_user_reading_data?.body});
+  },[data])
+
   if (isLoading)
     return (
       <div className="flex w-full h-screen justify-center items-center">
@@ -28,8 +31,9 @@ export default function UserSetup() {
     );
 
   return (
-    <div className="container px-0 min-h-screen mx-auto py-[40px]">
-      <UserDatatable refetch={refetch} data={data?.data} />
+    <div className="container min-h-screen sm:mx-auto p-4 pt-[40px]">
+      <UserDatatable refetch={refetch} data={data?.get_user_reading_data?.body} />
     </div>
   );
 }
+
