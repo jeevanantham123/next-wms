@@ -46,6 +46,8 @@ export default function Login() {
           userPermissions: data?.data?.permissions?.map(
             (permission) => permission.name
           ),
+          regEmail :  data?.data?.email,
+          email : data?.data?.email
         });
         toast("Login successful!", {
           action: {
@@ -83,6 +85,8 @@ export default function Login() {
     useAuthStore.setState({
       authorizedUser: true,
       userPermissions: data?.data?.permissions?.split(","),
+      regEmail :  data?.data?.email,
+      email : data?.data?.email
     });
   }
 

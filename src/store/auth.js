@@ -8,6 +8,8 @@ export const useAuthStore = create((set) => ({
   regEmail: "",
   password: "",
   email: "",
+  userEmail :'',
+  userData : [],
 }));
 
 export const setAuth = ({ key, value }) =>
