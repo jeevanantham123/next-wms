@@ -17,9 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDownIcon } from "@radix-ui/react-icons";
-import * as XLSX from "xlsx";
-import jsPDF from "jspdf";
+import { ChevronDownIcon, Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
 import "jspdf-autotable";
 
 import {
@@ -31,6 +29,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { downloadExcel, downloadPDF } from "@/lib/utils";
 const mockUserData = [
   {
     functionalProfile: "FP001",
@@ -158,165 +158,62 @@ const columns = [
       </div>
     ),
   },
+  {
+    id: "actions",
+    header: "Actions",
+    enableHiding: false,
+    cell: ({ row }) => {
+      return (
+        <div className="flex divide-x cursor-pointer">
+          <div
+            onClick={() => router.push(`/admin/user-setup/${row.original.id}`)}
+          >
+            <Pencil1Icon className="h-[24px] w-[24px] mr-2" />
+          </div>
+          <div className="">
+            <TrashIcon className="h-[24px] ml-2 w-[24px]" />
+          </div>
+        </div>
+      );
+    },
+  },
 ];
 
 function FunctionalProfile() {
-  const [filters, setFilters] = useState({
-    functionalProfile: "",
-  });
-  const [visibleColumns, setVisibleColumns] = useState(
-    columns.reduce((acc, column) => ({ ...acc, [column.header]: true }), {})
-  );
-  const data = mockUserData;
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
-  //Filter data based on user inputs
-  const filteredData = data.filter(
-    (row) =>
-      !filters.functionalProfile ||
-      row.functionalProfile
-        .toLowerCase()
-        .includes(filters.functionalProfile.toLowerCase())
-  );
-
   const convertToExcel = () => {
-    try {
-      // Map filtered data to export data with only visible columns
-      const exportData = filteredData.map((row) =>
-        columns.reduce((acc, column) => {
-          if (visibleColumns[column.header]) {
-            acc[column.header] = row[column.key];
-          }
-          return acc;
-        }, {})
-      );
-
-      // Create worksheet and add data
-      const worksheet = XLSX.utils.json_to_sheet(exportData);
-
-      // Set dynamic column widths based on content length (minimum width of 15 characters)
-      const columnWidths = columns
-        .filter((column) => visibleColumns[column.header])
-        .map((column) => ({
-          wch: Math.max(
-            15,
-            ...filteredData.map(
-              (row) => (row[column.key] || "").toString().length + 2
-            )
-          ),
-        }));
-      worksheet["!cols"] = columnWidths;
-
-      // Define header style (bold, white font on dark blue background, centered)
-      const headerStyle = {
-        font: { bold: true, color: { rgb: "FFFFFF" } },
-        fill: { fgColor: { rgb: "00396B" } }, // Dark blue background
-        alignment: { horizontal: "center", vertical: "center" },
-      };
-
-      // Apply style to headers
-      const headers = columns
-        .filter((column) => visibleColumns[column.header])
-        .map((col) => col.header);
-      headers.forEach((header, index) => {
-        const cellAddress = XLSX.utils.encode_cell({ r: 0, c: index });
-        worksheet[cellAddress].s = headerStyle;
-      });
-
-      // Apply center alignment to all data cells
-      exportData.forEach((_, rowIndex) => {
-        headers.forEach((_, colIndex) => {
-          const cellAddress = XLSX.utils.encode_cell({
-            r: rowIndex + 1,
-            c: colIndex,
-          });
-          if (worksheet[cellAddress]) {
-            worksheet[cellAddress].s = {
-              alignment: { horizontal: "center", vertical: "center" },
-            };
-          }
-        });
-      });
-
-      // Create workbook and append worksheet
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
-
-      // Generate a custom filename with current date and time
-      const fileName = `Functional_Profile_Data_${new Date()
-        .toISOString()
-        .replace(/[:.]/g, "-")}.xlsx`;
-
-      // Export the workbook to an Excel file
-      XLSX.writeFile(workbook, fileName);
-    } catch (error) {
-      console.error("Error exporting to Excel:", error);
-    }
+    downloadExcel(
+      "Functional Profile.xlsx",
+      "Functional Profile",
+      mockUserData?.map((masterData) => {
+        return {
+          "Functional Profile": masterData.functionalProfile,
+          Description: masterData.description,
+          "Access Codes": masterData.accessCodes?.join(","),
+        };
+      })
+    );
   };
 
-  //new req
   const convertToPDF = () => {
-    try {
-      const doc = new jsPDF("landscape"); // Landscape for more horizontal space
-
-      // Set up header text
-      const headerText = "SV Stack";
-      const pageWidth = doc.internal.pageSize.getWidth();
-
-      // Center-align the header text
-      doc.setFontSize(18);
-      doc.text(headerText, pageWidth / 2, 15, { align: "center" });
-
-      doc.setFontSize(12); // Slightly smaller font for subtitle
-      doc.text("Functional Profile Report", pageWidth / 10, 20); // Centered position
-
-      // Prepare table data
-      const tableColumnHeaders = columns
-        .filter((column) => visibleColumns[column.header])
-        .map((column) => column.header);
-
-      const tableRows = filteredData.map((row) =>
-        columns
-          .filter((column) => visibleColumns[column.header])
-          .map((column) => row[column.key])
-      );
-
-      // Add table to PDF with single-page adjustments
-      doc.autoTable({
-        head: [tableColumnHeaders],
-        body: tableRows,
-        startY: 25,
-        theme: "striped",
-        headStyles: {
-          fillColor: [0, 57, 107],
-          valign: "middle",
-          halign: "center",
-        },
-        styles: {
-          fontSize: 7, // Reduced font size for fitting more columns
-          cellPadding: 1, // Tighter cell padding
-          valign: "middle",
-          halign: "center",
-          overflow: "hidden", // Ensures text does not overflow outside cells
-        },
-        tableWidth: "auto", // Compresses table to fit within the page width
-        columnStyles: {
-          0: { cellWidth: "auto" }, // Dynamically adjust column widths
-        },
-        margin: { top: 10 },
-      });
-      doc.save(
-        `Functional_Profile_Data_${new Date()
-          .toISOString()
-          .replace(/[:.]/g, "-")}.pdf`
-      );
-    } catch (error) {
-      console.error("Error exporting to Pdf:", error);
-      alert("An error occurred while exporting to PDF. Please try again.");
-    }
+    downloadPDF(
+      columns
+        ?.filter((column) => column.id !== "select" && column.id !== "actions")
+        ?.map((column) => column.header),
+      mockUserData?.map((masterData) => {
+        return [
+          masterData.functionalProfile,
+          masterData.description,
+          masterData.accessCodes,
+        ];
+      }),
+      "Functional Profile.pdf",
+      "Functional Profile Report"
+    );
   };
 
   const table = useReactTable({
@@ -347,35 +244,22 @@ function FunctionalProfile() {
           </div>
           <div className="text-[14px] text-st">Description</div>
         </div>
-        {/* <div className="relative">
-          <Input
-            placeholder="Functional profile co.."
-            value={table.getColumn("functionalProfile")?.getFilterValue() ?? ""}
-            onChange={(event) =>
-              table
-                .getColumn("functionalProfile")
-                ?.setFilterValue(event.target.value)
-            }
-            className="w-150"
-          />
-          {!table.getColumn("functionalProfile").getFilterValue() ? (
-            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-              <SearchIcon className="h-4 w-4 text-muted-foreground" />
-            </span>
-          ) : (
-            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-              <X
-                className="h-4 w-4 text-muted-foreground"
-                onClick={(e) => handleFilterChange("functionalProfile", "")}
-              />
-            </span>
-          )}
-        </div> */}
+
+        <Input
+          placeholder="Search functional profile..."
+          value={table.getColumn("functionalProfile")?.getFilterValue() ?? ""}
+          onChange={(event) =>
+            table
+              .getColumn("functionalProfile")
+              ?.setFilterValue(event.target.value)
+          }
+          className="w-[400px] ml-auto h-[36px] border border-theme"
+        />
         <DropdownMenu>
           <DropdownMenuTrigger asChild className="bg-white">
             <Button
               variant="outline"
-              className="ml-auto border text-theme border-theme bg-white"
+              className=" border text-theme border-theme bg-white"
             >
               Columns <ChevronDownIcon className="ml-2 h-4 w-4 text-theme" />
             </Button>
