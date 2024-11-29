@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/auth";
 import { useSidebarStore } from "@/store/sidebar";
 import { usePathname, useRouter } from "next/navigation";
@@ -24,9 +23,9 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white shadow-xl sticky top-0 z-[9999]">
-      <div className="mx-auto px-2 sm:px-6 lg:px-10">
-        <div className="relative flex h-16 items-center justify-between">
+    <nav className="bg-white fixed flex w-full h-[84px] top-0 z-[9999]">
+      <div className="flex w-full">
+        <div className="flex w-full items-center justify-between">
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
             <button
               type="button"
@@ -70,72 +69,17 @@ export default function Navbar() {
             </button>
           </div>
 
-          <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-between">
-            <div className="flex cursor-pointer w-full flex-shrink-0 items-center justify-between">
-              <img
-                className="h-12 w-12 rounded-full"
-                src="/assets/SVStackLogo.png"
-                alt="Your Company"
-                onClick={() => setOpenSidebar(!openSidebar)}
-              />
-              {!isAdmin && (
-                <div className="flex flex-1 w-full gap-2 justify-center items-center ml-6">
-                  <Button
-                    variant={pathName.includes("wms") ? "default" : "outline"}
-                    onClick={() => router.push("/wms/dashboard")}
-                  >
-                    Warehouse Management
-                  </Button>
-                  <Button
-                    variant={
-                      pathName.includes("auditing") ? "default" : "outline"
-                    }
-                    onClick={() => router.push("/auditing/dashboard")}
-                  >
-                    Auditing
-                  </Button>
-                  <Button
-                    variant={pathName.includes("admin") ? "default" : "outline"}
-                    onClick={() => router.push("/admin/dashboard")}
-                  >
-                    Authentication
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            <div className="hidden">
-              <div className="flex space-x-4">
-                <Button
-                  onClick={() => router.push("/dashboard")}
-                  className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
-                  aria-current="page"
-                >
-                  Dashboard
-                </Button>
-                <Button
-                  onClick={() => router.push("/status-selection")}
-                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-                >
-                  Status
-                </Button>
-                <Button
-                  onClick={() => router.push("/status-selection")}
-                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-                >
-                  Receipts
-                </Button>
-                <Button
-                  onClick={() => router.push("/status-selection")}
-                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-                >
-                  Inventory
-                </Button>
-              </div>
-            </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <div className="w-[20%] min-w-[20%] flex px-[16px]">
+            <img
+              className=""
+              src="/icons/sv-stack.svg"
+              alt="Your Company"
+              onClick={() => setOpenSidebar(!openSidebar)}
+            />
           </div>
 
-          <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+          <div className="flex ml-auto w-full px-[16px] h-full justify-end items-center border-l border-b border-[#EAECF0]">
             <button
               type="button"
               className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"

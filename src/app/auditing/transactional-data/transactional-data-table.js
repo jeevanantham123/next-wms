@@ -344,6 +344,19 @@ const mockUserData = [
     tableField: "BPAADD",
     fieldDesc: "Address",
   },
+  {
+    table: "PORDER",
+    tableTitle: "POs",
+    transaction: "ZA061",
+    date: "10/22/24",
+    time: "07:05",
+    operation: "INSERT",
+    user: "SRAV",
+    name: "Sravya",
+    folder: "GITTRN",
+    tableField: "BPAADD",
+    fieldDesc: "Address",
+  },
 ];
 
 const columns = [
@@ -461,7 +474,7 @@ const columns = [
   // },
 ];
 
-function MasterData() {
+function TransactionalData() {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -487,15 +500,15 @@ function MasterData() {
           masterData.fieldDesc,
         ];
       }),
-      "Master Data.pdf",
-      "Master Data Report"
+      "Transactional Data.pdf",
+      "Transactional Data Report"
     );
   };
 
   const convertToExcel = () => {
     downloadExcel(
-      "Master Data.xlsx",
-      "Master Data",
+      "Transactional Data.xlsx",
+      "Transactional Data",
       mockUserData?.map((masterData) => {
         return {
           Table: masterData.table,
@@ -537,7 +550,9 @@ function MasterData() {
     <div className="w-full bg-white p-4 rounded-md overflow-hidden shadow-md">
       <div className="flex gap-2 mb-4 items-center py-4">
         <div className="flex flex-col">
-          <div className="text-[18px] font-medium text-pt">Master Data</div>
+          <div className="text-[18px] font-medium text-pt">
+            Transactional Data
+          </div>
           <div className="text-[14px] text-st">Description</div>
         </div>
 
@@ -681,4 +696,4 @@ function MasterData() {
   );
 }
 
-export default MasterData;
+export default TransactionalData;

@@ -15,8 +15,8 @@ export default function Layout({ children }) {
       <AdminSidebar />
       <div
         className={`${
-          openSidebar ? "sm:w-[85%] sm:ml-[15%]" : "sm:w-[100%]"
-        } duration-500`}
+          openSidebar ? "sm:w-[80%] sm:ml-[20%]" : "sm:w-[100%]"
+        } duration-500 mt-[84px]`}
       >
         {children}
       </div>
