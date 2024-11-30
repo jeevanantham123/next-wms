@@ -66,3 +66,33 @@ query GetAdminTransactions($email: String!) {
 }
 }
 `;
+
+export const GET_ADMIN_COMPANIES = gql`
+  query GetAdminCompanies($offset: Int!, $count: Int!) {
+    get_all_companies(offset: $offset, count: $count) {
+      StatusCode
+      body
+      message
+    }
+  }
+`;
+
+export const GET_ADMIN_ROLES = gql`
+  query GetAdminRoles($user_mail: String!) {
+    get_all_available_roles(user_email: $user_mail) {
+      StatusCode
+      body
+      message
+    }
+  }
+`;
+
+export const GET_ADMIN_MODULES_AND_TRANSACTION = gql`
+  query GetAdminModuleTransaction($user_mail: String!) {
+    get_all_modules_and_transactions(email: $user_mail) {
+      StatusCode
+      body
+      message
+    }
+  }
+`;

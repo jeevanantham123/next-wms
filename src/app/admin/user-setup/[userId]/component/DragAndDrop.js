@@ -2,38 +2,28 @@ import { Cross2Icon, PlusIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 
 const DragDropComponent = ({ dropItems, title }) => {
-  // Initialize state for the list of items and the assigned items
+
   const [items, setItems] = useState(dropItems);
+  console.log(items,'items')
   const [assignedItems, setAssignedItems] = useState([]);
 
-  // Handle drag start by passing item data
   const handleDragStart = (e, item) => {
     e.dataTransfer.setData("item", JSON.stringify(item));
   };
 
-  // Handle drop on the right side, update assigned items and mark as assigned
   const handleDrop = (e) => {
     e.preventDefault();
     const item = JSON.parse(e.dataTransfer.getData("item"));
-
-    // Avoid re-adding the same item
     if (assignedItems.find((assigned) => assigned.id === item.id)) return;
-
     setAssignedItems([...assignedItems, item]);
-
-    // Update items to mark the dragged item as assigned
     setItems(
       items.map((i) => (i.id === item.id ? { ...i, assigned: true } : i))
     );
   };
 
   const handleClick = (item) => {
-    // Avoid re-adding the same item
     if (assignedItems.find((assigned) => assigned.id === item.id)) return;
-
     setAssignedItems([...assignedItems, item]);
-
-    // Update items to mark the dragged item as assigned
     setItems(
       items.map((i) => (i.id === item.id ? { ...i, assigned: true } : i))
     );

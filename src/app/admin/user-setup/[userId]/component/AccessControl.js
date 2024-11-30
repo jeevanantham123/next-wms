@@ -1,14 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import DragDropComponent from "./DragAndDrop";
 
-export default function AccessControl() {
-  const DaDcompanies = [
-    { id: 1, name: "Company 1", assigned: false },
-    { id: 2, name: "Company 2", assigned: false },
-    { id: 3, name: "Company 3", assigned: false },
-    { id: 4, name: "Company 4", assigned: false },
-  ];
+export default function AccessControl({adminCompanies,adminModulesTransactions}) {
+  
+  const [adminCompany,setAdminCompany] = useState([])
+  const [modules,setModules] = useState([])
 
   const DaRoles = [
     { id: 1, name: "Role 1", assigned: false },
@@ -51,15 +49,34 @@ export default function AccessControl() {
     { id: 3, name: "Folder 3", assigned: false },
     { id: 4, name: "Folder 4", assigned: false },
   ];
+useEffect(()=>{
+const DaCompny = [];
+const adminmodules = []
+
+adminCompanies && adminCompanies?.forEach((value, index) => {
+  DaCompny[index] = { id: index, name: value.company_name ,assigned: false };
+});
+Object.keys(adminModulesTransactions).forEach((value, index) => {
+  adminmodules[index] = { id: index, name: value ,assigned: false };
+});
+setModules(adminmodules);
+setAdminCompany(DaCompny); 
+},[])
+
+
   return (
     <div className="flex mt-[16px] flex-wrap gap-4 flex-col">
       <div className="flex flex-wrap items-center justify-start gap-8">
-        <DragDropComponent title={"Companies"} dropItems={DaDcompanies} />
+        {adminCompany?.length > 0 &&
+        <DragDropComponent title={"Companies"} dropItems={adminCompany} />
+}
         <DragDropComponent title={"Sites"} dropItems={DaSites} />
       </div>
 
       <div className="flex flex-wrap items-center justify-start gap-8">
-        <DragDropComponent title={"Modules"} dropItems={DaModules} />
+        {modules?.length > 0 && 
+        <DragDropComponent title={"Modules"} dropItems={modules} setModules={setModules}/>
+}
         <DragDropComponent title={"Transactions"} dropItems={DaTransactions} />
       </div>
       <div>
