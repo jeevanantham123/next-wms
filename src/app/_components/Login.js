@@ -85,8 +85,8 @@ export default function Login() {
     useAuthStore.setState({
       authorizedUser: true,
       userPermissions: data?.data?.permissions?.split(","),
-      regEmail :  data?.data?.email,
-      email : data?.data?.email
+      regEmail :  data?.data?.user,
+      email : data?.data?.user
     });
   }
 

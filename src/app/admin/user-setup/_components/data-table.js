@@ -129,8 +129,7 @@ export function UserDatatable({ data, refetch }) {
                 await useAuthStore.setState({
                   userEmail : row.original.email
                 });
-                console.log(row,'row')
-                router.push(`/admin/user-setup/${row.id}`)
+                router.push(`/admin/user-setup/${row.original.email}`)
               }
             }
             >

@@ -1,6 +1,7 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,use } from 'react';
 import { useQuery } from '@urql/next';
+import { useRouter } from 'next/navigation'
 import MasterData from "./component/MasterData";
 import UserEditForm from "./component/user-editform";
 import UserRole from "./component/UserRole";
@@ -12,14 +13,19 @@ import { LoadingSpinner } from '@/components/ui/loader';
 const UserPage =  ({ params }) => {
   const {
     email,
-    userEmail
   } = useAuthStore((state) => state);
+  const value =use(params)
   const { userData } = useAuthStore((state) => state);
   const [loading,setLoading] = useState(false)
   const [userDetails,setUserDetils] = useState({})
 
-  const [result, refetch] = useQuery({ query: GET_ADMIN_USER, variables: { adminUserMail:email ?? 'admin@germinit.com' , UserMail:userEmail || "superuser@germinit.com" }, });
-  const { data, fetching: isLoading, error: isError } = result;
+  const [{ data, fetching: isLoading, error: isError }] = useQuery({
+    query: GET_ADMIN_USER,
+    variables: {
+      admin_user_mail:  'admin@germinit.com',
+      user_mail: 'superuser@germinit.com',
+    },
+  });
 
   const fetchUserData = async() =>{
     setLoading(true)

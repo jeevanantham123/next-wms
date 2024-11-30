@@ -39,8 +39,8 @@ export const GET_ADMIN_USERS_LIST = gql`
 `;
 
 export const GET_ADMIN_USER = gql`
-  query GetUserDetail($adminUserMail: String!,$UserMail: String!) {
-    get_user_details(admin_user_mail: $adminUserMail,user_mail: $UserMail) {
+  query GetUserDetail($admin_user_mail: String!,$user_mail: String!) {
+    get_user_details(admin_user_mail: $admin_user_mail,user_mail: $user_mail) {
       StatusCode
       message
       body
