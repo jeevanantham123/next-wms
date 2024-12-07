@@ -1,12 +1,11 @@
-import React from 'react';
-import User from './user';
+import User from "./user-data-table";
 
 const UserPage = () => {
-    return (
-        <div className="container sm:mx-1 p-8">
-            <User />
-        </div>
-    );
+  return (
+    <div className="container px-0 min-h-screen pt-[30px] mx-auto">
+      <User />
+    </div>
+  );
 };
 
 export default UserPage;

@@ -1,22 +1,19 @@
 import {
   AvatarIcon,
-  BellIcon,
   ButtonIcon,
   ColumnsIcon,
   Component1Icon,
   Component2Icon,
   HamburgerMenuIcon,
   LockClosedIcon,
-  RowsIcon,
-  TokensIcon,
 } from "@radix-ui/react-icons";
 
 export const SidebarItems = [
-  {
-    title: "Dashboard",
-    path: "/auditing/dashboard",
-    icon: <TokensIcon />,
-  },
+  // {
+  //   title: "Dashboard",
+  //   path: "/auditing/dashboard",
+  //   icon: <TokensIcon />,
+  // },
   {
     title: "User",
     path: "/auditing/user",
@@ -28,8 +25,8 @@ export const SidebarItems = [
     icon: <Component1Icon />,
   },
   {
-    title: "Functional authorization",
-    path: "/auditing/functional-authorization",
+    title: "Functional authentication",
+    path: "/auditing/functional-authentication",
     icon: <Component2Icon />,
   },
   {
@@ -42,11 +39,11 @@ export const SidebarItems = [
     path: "/auditing/transactional-data",
     icon: <ButtonIcon />,
   },
-  {
-    title: "All",
-    path: "/auditing/all",
-    icon: <RowsIcon />,
-  },
+  // {
+  //   title: "All",
+  //   path: "/auditing/all",
+  //   icon: <RowsIcon />,
+  // },
   {
     title: "Login history",
     path: "/auditing/login-history",
@@ -57,9 +54,9 @@ export const SidebarItems = [
     path: "/auditing/db-history",
     icon: <HamburgerMenuIcon />,
   },
-  {
-    title: "Notifications",
-    path: "/auditing/notifications",
-    icon: <BellIcon />,
-  },
+  // {
+  //   title: "Notifications",
+  //   path: "/auditing/notifications",
+  //   icon: <BellIcon />,
+  // },
 ];
