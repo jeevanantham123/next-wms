@@ -8,15 +8,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 
-export default function UserRole({ adminRoles }) {
-  const [roles, setRoles] = useState([]);
+export default function UserRole() {
   const [userRole, setUserRole] = useState("");
-
+  const roles = [
+    { id: 1, name: "Distributor" },
+    { id: 2, name: "Stock manager" },
+    { id: 3, name: "Manager" },
+    { id: 4, name: "IT Manager" },
+    { id: 5, name: "Sales representative" },
+    { id: 6, name: "Production line user" },
+  ];
   const formSchema = z.object({
     roleId: z.string().min(1, { message: "This field has to be filled." }),
   });
@@ -29,15 +35,6 @@ export default function UserRole({ adminRoles }) {
   function onSubmit(values) {
     console.log(values);
   }
-
-  useEffect(() => {
-    const DaRoles = [];
-    adminRoles &&
-    adminRoles?.forEach((value, index) => {
-        DaRoles[index] = { id: index, name: value };
-    });
-    setRoles(DaRoles);
-  }, [adminRoles]);
 
   return (
     <div className="flex bg-white px-[16px] items-center mt-[16px] justify-between rounded-md border border-[#EAECF0]">

@@ -22,9 +22,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
+import { useUserDataStore } from "./store";
 
 const formSchema = z.object({
-  username: z.string().min(2, {
+  firstname: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
   lastname: z.string().min(2, {
@@ -41,132 +42,33 @@ const formSchema = z.object({
   phonenumber: z.string().min(10, {
     message: "Phone number must be 10 digits.",
   }),
-
-  roleId: z.string().min(1, { message: "This field has to be filled." }),
   dob: z.date({
     required_error: "A date of birth is required.",
   }),
+  active: z.boolean(),
+  hold: z.boolean(),
 });
 
-const UserEditForm = ({ userDetails ,adminCompany}) => {
-  console.log(userDetails?.username,adminCompany,"userDetails")
-  const [userCompany, setUserCompany] = useState([
-    { name: "Company 1", sites: ["Site 1", "Site 2"] },
-    {
-      name: "Company 2",
-      sites: ["Site 1", "Site 2", "Site 3", "Site 4", "Site 5"],
-    },
-  ]);
-  const [userModules, setUserModules] = useState([
-    { name: "Module 1", transactions: ["Transaction 1", "Transaction 2"] },
-    {
-      name: "Module 2",
-      transactions: [
-        "Transaction 1",
-        "Transaction 2",
-        "Transaction 3",
-        "Transaction 4",
-        "Transaction 5",
-      ],
-    },
-  ]);
-  const [userrole, setUserRole] = useState("");
-  const [useractive, setUserActive] = useState(true);
-  const [holdStatus, setUserHold] = useState(false);
+const UserEditForm = () => {
+  const userData = useUserDataStore((state) => state.userData);
+  const userDetaills = userData?.userDetails?.userData;
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: userDetails?.username || "",
-      lastname: userDetails?.nom_name || "",
-      gender: 'male',
-      email: userDetails?.email|| "",
-      phonenumber: "6380055351" || "",
-      roleId: "",
+      firstname: userDetaills?.firstname || "",
+      lastname: userDetaills?.lastname || "",
+      gender: userDetaills?.gender || "",
+      email: userDetaills?.email || "",
+      phonenumber: userDetaills?.phone_no || "",
+      active: userDetaills?.active || false,
+      hold: userDetaills?.hold || false,
+      dob: new Date(userDetaills?.date_of_birth) || "",
     },
   });
 
   function onSubmit(values) {
     console.log(values);
-  }
-
-  function addCompany(companyname) {
-    setUserCompany((prevUserCompany) => [
-      ...prevUserCompany,
-      { name: companyname, sites: [] },
-    ]);
-  }
-  function removeCompany(companyname) {
-    setUserCompany((prevUserCompany) =>
-      prevUserCompany.filter((userComp) => userComp.name !== companyname)
-    );
-  }
-  function addCompanySite(companyname, sitename) {
-    setUserCompany((prevUserCompany) =>
-      prevUserCompany.map((userComp) =>
-        userComp.name === companyname
-          ? { ...userComp, sites: [...userComp.sites, sitename] }
-          : userComp
-      )
-    );
-  }
-  function removeCompanySite(companyname, sitename) {
-    setUserCompany((prevUserCompany) =>
-      prevUserCompany.map((userComp) =>
-        userComp.name === companyname
-          ? {
-              ...userComp,
-              sites: userComp.sites.filter((site) => site !== sitename),
-            }
-          : userComp
-      )
-    );
-  }
-
-  function addModule(moduleName) {
-    setUserModules((prevUserModules) => [
-      ...prevUserModules,
-      { name: moduleName, transactions: [] },
-    ]);
-  }
-
-  function removeModule(moduleName) {
-    setUserModules((prevUserModules) =>
-      prevUserModules.filter((module) => module.name !== moduleName)
-    );
-  }
-
-  function addModuleTransaction(moduleName, transactionName) {
-    setUserModules((prevUserModules) =>
-      prevUserModules.map((module) =>
-        module.name === moduleName
-          ? {
-              ...module,
-              transactions: [...module.transactions, transactionName],
-            }
-          : module
-      )
-    );
-  }
-
-  function removeModuleTransaction(moduleName, transactionName) {
-    setUserModules((prevUserModules) =>
-      prevUserModules.map((module) =>
-        module.name === moduleName
-          ? {
-              ...module,
-              transactions: module.transactions.filter(
-                (transaction) => transaction !== transactionName
-              ),
-            }
-          : module
-      )
-    );
-  }
-  function handleStatusChange(activestatus) {
-    setUserActive(activestatus);
-  }
-  function handleHoldChange(holdStatus) {
-    setUserHold(holdStatus);
   }
 
   return (
@@ -185,41 +87,54 @@ const UserEditForm = ({ userDetails ,adminCompany}) => {
             <span className="text-[16px]">Profile Image</span>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="https://picsum.photos/200/200"
+              src={userDetaills?.avatar}
               className="profileImg rounded-sm"
               alt="avatar"
             />
           </div>
-          <div className="w-[15%] ">
-            <span className="text-sm">User Status</span>
-            <div className="grid mr-12 grid-cols-2 gap-2 grid-rows-2 mt-6">
-              <Switch
-                checked={useractive}
-                onCheckedChange={() => handleStatusChange(!useractive)}
-              />
-              <h4>Active</h4>
-              <Switch
-                checked={holdStatus}
-                onCheckedChange={() => handleHoldChange(!holdStatus)}
-              />
-              <h4>Hold</h4>
-            </div>
-          </div>
           {/* form */}
           <FormProvider {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="w-[70%]">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="w-[85%]">
               <div className="flex ">
+                <div className="w-[15%] mt-[16px] grid grid-cols-2 h-[80px] grid-rows-2">
+                  <FormField
+                    control={form.control}
+                    name="active"
+                    render={({ field }) => (
+                      <>
+                        <h4>Active</h4>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="hold"
+                    render={({ field }) => (
+                      <>
+                        <h4>Hold</h4>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </>
+                    )}
+                  />
+                </div>
                 <div className="grid grid-cols-3 grid-rows-2 min-w-[500px] gap-8">
                   <FormField
                     control={form.control}
-                    name="username"
+                    name="firstname"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Firstname</FormLabel>
                         <FormControl>
                           <Input
                             className="bg-white"
-                            placeholder="Enter username"
+                            placeholder="Enter firstname"
                             {...field}
                           />
                         </FormControl>
@@ -278,7 +193,7 @@ const UserEditForm = ({ userDetails ,adminCompany}) => {
                                 )}
                               >
                                 {field.value ? (
-                                  format(field.value, "PPP")
+                                  format(new Date(field?.value), "dd-MM-yyyy")
                                 ) : (
                                   <span>Pick a date</span>
                                 )}
@@ -292,8 +207,10 @@ const UserEditForm = ({ userDetails ,adminCompany}) => {
                           >
                             <Calendar
                               mode="single"
-                              selected={field.value}
-                              onSelect={field.onChange}
+                              selected={new Date(field.value)}
+                              onSelect={(value) => {
+                                field.onChange(String(value));
+                              }}
                               disabled={(date) =>
                                 date > new Date() ||
                                 date < new Date("1900-01-01")
