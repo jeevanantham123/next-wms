@@ -9,7 +9,7 @@ export default function Layout({ children }) {
   const openSidebar = useSidebarStore((state) => state.openSidebar);
 
   const router = useRouter();
-  // if (!userPermissions.includes("admin")) router.push("/unauthorized");
+  if (!userPermissions.includes("admin")) router.push("/unauthorized");
   return (
     <div className="sm:flex">
       <AdminSidebar />

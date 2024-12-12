@@ -8,33 +8,40 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
+import { useAvailableData, useUserDataStore } from "./store";
+
+const getRoleList = (list) =>
+  list?.map((item, index) => {
+    return { id: index + 1, name: item };
+  });
 
 export default function UserRole() {
-  const [userRole, setUserRole] = useState("");
-  const roles = [
-    { id: 1, name: "Distributor" },
-    { id: 2, name: "Stock manager" },
-    { id: 3, name: "Manager" },
-    { id: 4, name: "IT Manager" },
-    { id: 5, name: "Sales representative" },
-    { id: 6, name: "Production line user" },
-  ];
-  const formSchema = z.object({
-    roleId: z.string().min(1, { message: "This field has to be filled." }),
-  });
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      roleId: "",
-    },
-  });
-  function onSubmit(values) {
-    console.log(values);
-  }
+  const userData = useUserDataStore((state) => state.userData);
+  const selectedRole = useUserDataStore((state) => state.selectedRole);
+  const setSelectedRole = useUserDataStore((state) => state.setSelectedRole);
+  const globalData = useAvailableData((state) => state.availableData);
+  const { userRole: assignedUserRole = "" } = userData?.userDetails || {};
+  const availableData = globalData?.availableData || {};
+
+  const [userRole, setUserRole] = useState(assignedUserRole);
+  const [salesRepCode, setSalesRepCode] = useState("");
+  const roles = getRoleList(availableData?.roles);
+
+  useEffect(() => {
+    setUserRole(assignedUserRole);
+  }, [assignedUserRole]);
+
+  useEffect(() => {
+    setSelectedRole({
+      ...selectedRole,
+      userRole: userRole,
+      salesRepCode: salesRepCode,
+    });
+  }, [userRole, salesRepCode]);
 
   return (
     <div className="flex bg-white px-[16px] items-center mt-[16px] justify-between rounded-md border border-[#EAECF0]">
@@ -67,7 +74,12 @@ export default function UserRole() {
           </SelectContent>
         </Select>
         {userRole == "Sales representative" && (
-          <Input className="bg-white w-[150px]" placeholder="Sales rep code" />
+          <Input
+            value={salesRepCode}
+            onChange={(e) => setSalesRepCode(e.target.value)}
+            className="bg-white w-[150px]"
+            placeholder="Sales rep code"
+          />
         )}
       </div>
     </div>

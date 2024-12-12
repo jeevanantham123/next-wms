@@ -7,7 +7,7 @@ export const useAuthStore = create((set) => ({
   regPassword: "",
   regEmail: "",
   password: "",
-  email: "admin@germinit.com",
+  email: "",
   userEmail: "",
   userData: [],
 }));

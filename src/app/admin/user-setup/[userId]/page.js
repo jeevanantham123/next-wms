@@ -27,13 +27,14 @@ const UserPage = ({ params }) => {
   const adminUserMail = email || "admin@germinit.com";
   const userMail =
     decodeURIComponent(value?.userId) || "superuser@germinit.com";
-  const [{ data, fetching: isLoading, error: isError }] = useQuery({
-    query: GET_ADMIN_USER,
-    variables: {
-      admin_user_mail: adminUserMail,
-      user_mail: userMail,
-    },
-  });
+  const [{ data, fetching: isLoading, error: isError }, reexecuteQuery] =
+    useQuery({
+      query: GET_ADMIN_USER,
+      variables: {
+        admin_user_mail: adminUserMail,
+        user_mail: userMail,
+      },
+    });
   const [
     {
       data: globalValues,
@@ -50,6 +51,11 @@ const UserPage = ({ params }) => {
   setUserData(data?.["get_user_details"]?.["body"]);
   setAvailableData(globalValues?.["get_all_global_values"]?.["body"]);
 
+  const reFetchUser = async () => {
+    console.log("Refetch user");
+    reexecuteQuery({ requestPolicy: "network-only" });
+  };
+
   if (isLoading || isGlobalValuesLoading)
     return (
       <div className="flex w-full h-screen justify-center items-center">
@@ -61,7 +67,7 @@ const UserPage = ({ params }) => {
     return (
       <div className="flex-col">
         <div className="flex-1 p-4 pt-4">
-          <UserEditForm />
+          <UserEditForm userEmail={userMail} reFetchUser={reFetchUser} />
           <MasterData />
           <UserRole />
           <AccessControl />

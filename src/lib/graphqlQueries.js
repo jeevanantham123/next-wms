@@ -1,4 +1,4 @@
-import { gql } from "@urql/next";
+import { gql, useMutation } from "@urql/next";
 export const GET_USER_DATA = gql`
   query GetUserReadingData($offset: Int!, $count: Int!) {
     get_user_reading_data(offset: $offset, count: $count) {
@@ -41,6 +41,24 @@ export const GET_ADMIN_USERS_LIST = gql`
 export const GET_ADMIN_USER = gql`
   query GetUserDetail($admin_user_mail: String!, $user_mail: String!) {
     get_user_details(admin_user_mail: $admin_user_mail, user_mail: $user_mail) {
+      StatusCode
+      message
+      body
+    }
+  }
+`;
+
+export const UPDATE_USER = gql`
+  mutation UpdateUserDetail(
+    $admin_user_mail: String!
+    $user_mail: String!
+    $data: updatable_values_of_user!
+  ) {
+    update_user(
+      admin_user_mail: $admin_user_mail
+      user_email: $user_mail
+      updating_values: $data
+    ) {
       StatusCode
       message
       body

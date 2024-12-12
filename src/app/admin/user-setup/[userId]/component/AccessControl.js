@@ -24,10 +24,16 @@ const createAssignedItems = (assignedItems, idKey, nameKey, key, parentKey) =>
     parent: item[parentKey],
   }));
 
+const getSelectedItems = (assignedItems) => {
+  if (!assignedItems.length) return [];
+  return assignedItems?.map((item) => item.id);
+};
+
 const AccessControl = () => {
   const userData = useUserDataStore((state) => state.userData);
+  const selectedData = useUserDataStore((state) => state.selectedData);
+  const setSelectedData = useUserDataStore((state) => state.setSelectedData);
   const globalData = useAvailableData((state) => state.availableData);
-  console.log(globalData);
 
   const { assignedData = {} } = userData?.userDetails || {};
   const {
@@ -85,7 +91,6 @@ const AccessControl = () => {
   }, [assignedCompanies, availableData.sites]);
 
   useEffect(() => {
-    console.log("Modu", assignedModules);
     const updatedAssignedTransactions = assignedTransactions?.filter(
       (transaction) =>
         assignedModules?.some((module) => module.id === transaction.parent)
@@ -100,6 +105,16 @@ const AccessControl = () => {
     setAssignedTransactions(updatedAssignedTransactions);
     setFilteredTransactions(updatedDropItems);
   }, [assignedModules, availableData.transactions]);
+
+  useEffect(() => {
+    setSelectedData({
+      ...selectedData,
+      companies: getSelectedItems(assignedCompanies),
+      sites: getSelectedItems(assignedSites),
+      transactions: getSelectedItems(assignedTransactions),
+      modules: getSelectedItems(assignedModules),
+    });
+  }, [assignedCompanies, assignedSites, assignedModules, assignedTransactions]);
 
   return (
     <div className="flex mt-[16px] flex-wrap gap-4 flex-col">

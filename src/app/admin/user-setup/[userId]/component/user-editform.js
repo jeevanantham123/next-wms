@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -23,6 +23,10 @@ import {
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { useUserDataStore } from "./store";
+import { UPDATE_USER } from "@/lib/graphqlQueries";
+import { useAuthStore } from "@/store/auth";
+import { useMutation } from "@urql/next";
+import { LoadingSpinner } from "@/components/ui/loader";
 
 const formSchema = z.object({
   firstname: z.string().min(2, {
@@ -49,8 +53,17 @@ const formSchema = z.object({
   hold: z.boolean(),
 });
 
-const UserEditForm = () => {
+const UserEditForm = ({ userEmail, reFetchUser }) => {
   const userData = useUserDataStore((state) => state.userData);
+  const { selectedData, selectedRole, selectedModule } = useUserDataStore(
+    (state) => state
+  );
+  const { email } = useAuthStore((state) => state);
+
+  const adminUserMail = email || "admin@germinit.com";
+  const userMail = decodeURIComponent(userEmail) || "superuser@germinit.com";
+  const [{ data, fetching, error }, executeMutation] = useMutation(UPDATE_USER);
+
   const ud = userData?.userDetails?.userData;
 
   const form = useForm({
@@ -67,18 +80,66 @@ const UserEditForm = () => {
     },
   });
 
-  function onSubmit(values) {
-    console.log(values);
+  async function onSubmit(e) {
+    e.preventDefault();
+    const {
+      firstname,
+      lastname,
+      gender,
+      email,
+      phonenumber,
+      active,
+      hold,
+      dob,
+    } = form.getValues();
+
+    const updatingValues = {
+      assignedData: selectedData,
+      userRole: selectedRole?.userRole,
+      salesRepCode: selectedRole?.salesRepCode,
+      master_module: selectedModule,
+      userData: {
+        firstname,
+        lastname,
+        gender,
+        email,
+        active: Number(active),
+        phone_no: phonenumber,
+        date_of_birth: format(dob, "yyyy-MM-dd"),
+      },
+    };
+
+    try {
+      const response = await executeMutation({
+        admin_user_mail: adminUserMail,
+        user_mail: userMail,
+        data: updatingValues,
+      });
+      console.log(
+        "Update successful:",
+        response?.data?.update_user?.StatusCode,
+        fetching,
+        error
+      );
+      if (response?.data?.update_user?.StatusCode === 200) reFetchUser();
+    } catch (err) {
+      console.error("Error updating user:", err);
+    }
   }
 
   return (
     <div className="flex flex-col rounded-md border border-[#EAECF0]">
+      {fetching && (
+        <div className="fixed inset-0 h-full flex justify-center items-center bg-black/30 z-[9999]">
+          <LoadingSpinner />
+        </div>
+      )}
       <div className="w-90  bg-white lexend-font border-b border-[#EAECF0]">
         <div className="flex h-[60px] px-[16px] justify-between items-center">
           <span className="flex items-center text-[18px] text-pt font-medium">
             Edit User Details
           </span>
-          <Button>Save & Update</Button>
+          <Button onClick={onSubmit}>Save & Update</Button>
         </div>
       </div>
       <div className="w-90 bg-white p-2 lexend-font">
@@ -209,7 +270,7 @@ const UserEditForm = () => {
                               mode="single"
                               selected={new Date(field.value)}
                               onSelect={(value) => {
-                                field.onChange(String(value));
+                                field.onChange(value);
                               }}
                               disabled={(date) =>
                                 date > new Date() ||

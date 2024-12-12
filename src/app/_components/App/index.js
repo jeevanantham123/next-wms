@@ -15,14 +15,14 @@ export const App = ({ children }) => {
   return (
     <UrqlWrapper>
       <QueryClientProvider client={queryClient}>
-        {/* {authorizedUser ? ( */}
-        <>
-          <Navbar />
-          <div className="container mx-auto">{children}</div>
-        </>
-        {/* ) : (
-        <Login />
-      )} */}
+        {authorizedUser ? (
+          <>
+            <Navbar />
+            <div className="container mx-auto">{children}</div>
+          </>
+        ) : (
+          <Login />
+        )}
         <Toaster />
         <ReactQueryDevtools />
       </QueryClientProvider>
