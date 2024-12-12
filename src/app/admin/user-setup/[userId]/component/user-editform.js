@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -51,19 +51,19 @@ const formSchema = z.object({
 
 const UserEditForm = () => {
   const userData = useUserDataStore((state) => state.userData);
-  const userDetaills = userData?.userDetails?.userData;
+  const ud = userData?.userDetails?.userData;
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstname: userDetaills?.firstname || "",
-      lastname: userDetaills?.lastname || "",
-      gender: userDetaills?.gender || "",
-      email: userDetaills?.email || "",
-      phonenumber: userDetaills?.phone_no || "",
-      active: userDetaills?.active || false,
-      hold: userDetaills?.hold || false,
-      dob: new Date(userDetaills?.date_of_birth) || "",
+      firstname: ud?.firstname || "",
+      lastname: ud?.lastname || "",
+      gender: ud?.gender || "",
+      email: ud?.email || "",
+      phonenumber: ud?.phone_no || "",
+      active: ud?.active || false,
+      hold: ud?.hold || false,
+      dob: ud?.date_of_birth ? new Date(ud?.date_of_birth) : "",
     },
   });
 
@@ -87,7 +87,7 @@ const UserEditForm = () => {
             <span className="text-[16px]">Profile Image</span>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={userDetaills?.avatar}
+              src="https://picsum.photos/200/200"
               className="profileImg rounded-sm"
               alt="avatar"
             />
@@ -193,7 +193,7 @@ const UserEditForm = () => {
                                 )}
                               >
                                 {field.value ? (
-                                  format(new Date(field?.value), "dd-MM-yyyy")
+                                  format(field.value, "dd-MM-yyyy")
                                 ) : (
                                   <span>Pick a date</span>
                                 )}

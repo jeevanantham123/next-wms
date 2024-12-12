@@ -7,7 +7,7 @@ import { useEffect } from "react";
 
 // Helper function to create drop items
 const createDropItems = (items, assignedItems, idKey, nameKey, key) => {
-  return items.map((item) => ({
+  return items?.map((item) => ({
     id: item[idKey],
     name: item[nameKey],
     assigned: assignedItems.some((assigned) => assigned["id"] === item[idKey]),
@@ -17,7 +17,7 @@ const createDropItems = (items, assignedItems, idKey, nameKey, key) => {
 
 // Helper function to create assigned items
 const createAssignedItems = (assignedItems, idKey, nameKey, key, parentKey) =>
-  assignedItems.map((item) => ({
+  assignedItems?.map((item) => ({
     id: item[idKey],
     name: item[nameKey],
     key: key,
@@ -27,6 +27,7 @@ const createAssignedItems = (assignedItems, idKey, nameKey, key, parentKey) =>
 const AccessControl = () => {
   const userData = useUserDataStore((state) => state.userData);
   const globalData = useAvailableData((state) => state.availableData);
+  console.log(globalData);
 
   const { assignedData = {} } = userData?.userDetails || {};
   const {

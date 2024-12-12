@@ -13,19 +13,19 @@ export const App = ({ children }) => {
   const authorizedUser = useAuthStore((state) => state.authorizedUser);
 
   return (
-  <UrqlWrapper>
-    <QueryClientProvider client={queryClient}>
-      {authorizedUser ? (
+    <UrqlWrapper>
+      <QueryClientProvider client={queryClient}>
+        {/* {authorizedUser ? ( */}
         <>
           <Navbar />
           <div className="container mx-auto">{children}</div>
         </>
-      ) : (
+        {/* ) : (
         <Login />
-      )}
-      <Toaster />
-      <ReactQueryDevtools />
-    </QueryClientProvider>
-  </UrqlWrapper> 
+      )} */}
+        <Toaster />
+        <ReactQueryDevtools />
+      </QueryClientProvider>
+    </UrqlWrapper>
   );
 };

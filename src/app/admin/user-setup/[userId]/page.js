@@ -11,10 +11,10 @@ import {
   GET_ADMIN_COMPANIES,
   GET_ADMIN_ROLES,
   GET_ADMIN_MODULES_AND_TRANSACTION,
+  GET_GLOBAL_VALUES,
 } from "@/lib/graphqlQueries";
 import AccessControl from "./component/AccessControl";
 import { LoadingSpinner } from "@/components/ui/loader";
-import { globalValues, userDetails } from "./mock";
 import { useAvailableData, useUserDataStore } from "./component/store";
 
 const UserPage = ({ params }) => {
@@ -23,13 +23,6 @@ const UserPage = ({ params }) => {
   const setAvailableData = useAvailableData((state) => state.setAvailableData);
 
   const value = use(params);
-
-  //mock
-  const userData = userDetails;
-  setUserData(userData?.data);
-
-  const availableData = globalValues;
-  setAvailableData(availableData?.data);
 
   const adminUserMail = email || "admin@germinit.com";
   const userMail =
@@ -41,24 +34,40 @@ const UserPage = ({ params }) => {
       user_mail: userMail,
     },
   });
+  const [
+    {
+      data: globalValues,
+      isLoading: isGlobalValuesLoading,
+      error: isGlobalValuesError,
+    },
+  ] = useQuery({
+    query: GET_GLOBAL_VALUES,
+    variables: {
+      admin_user_mail: adminUserMail,
+    },
+  });
 
-  if (isLoading)
+  setUserData(data?.["get_user_details"]?.["body"]);
+  setAvailableData(globalValues?.["get_all_global_values"]?.["body"]);
+
+  if (isLoading || isGlobalValuesLoading)
     return (
       <div className="flex w-full h-screen justify-center items-center">
         <LoadingSpinner />
       </div>
     );
 
-  return (
-    <div className="flex-col">
-      <div className="flex-1 p-4 pt-4">
-        <UserEditForm />
-        <MasterData />
-        <UserRole />
-        <AccessControl />
+  if (!isLoading && data && globalValues)
+    return (
+      <div className="flex-col">
+        <div className="flex-1 p-4 pt-4">
+          <UserEditForm />
+          <MasterData />
+          <UserRole />
+          <AccessControl />
+        </div>
       </div>
-    </div>
-  );
+    );
 };
 
 export default UserPage;

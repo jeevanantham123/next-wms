@@ -1,4 +1,4 @@
-import { gql } from '@urql/next';
+import { gql } from "@urql/next";
 export const GET_USER_DATA = gql`
   query GetUserReadingData($offset: Int!, $count: Int!) {
     get_user_reading_data(offset: $offset, count: $count) {
@@ -17,15 +17,15 @@ export const GET_USER_DATA = gql`
 
 export const GET_PRODUCT_SITE_DATA = gql`
   query GetProductSiteData($offset: Int!, $count: Int!) {
-    get_product_site_data(offset: $offset, count: $count){
-    StatusCode
-    message
+    get_product_site_data(offset: $offset, count: $count) {
+      StatusCode
+      message
       body {
-      s_no
-      uniq_id
-      product
+        s_no
+        uniq_id
+        product
       }
-   }
+    }
   }
 `;
 export const GET_ADMIN_USERS_LIST = gql`
@@ -39,32 +39,43 @@ export const GET_ADMIN_USERS_LIST = gql`
 `;
 
 export const GET_ADMIN_USER = gql`
-  query GetUserDetail($admin_user_mail: String!,$user_mail: String!) {
-    get_user_details(admin_user_mail: $admin_user_mail,user_mail: $user_mail) {
+  query GetUserDetail($admin_user_mail: String!, $user_mail: String!) {
+    get_user_details(admin_user_mail: $admin_user_mail, user_mail: $user_mail) {
       StatusCode
       message
       body
     }
   }
 `;
-export const GET_ADMIN_MODULES= gql`
-query GetAdminModules($email: String!) {
-  get_modules(email: $email){
-  StatusCode
-  body
-  message
-}
-}
+
+export const GET_GLOBAL_VALUES = gql`
+  query GetGlobalValues($admin_user_mail: String!) {
+    get_all_global_values(admin_user_mail: $admin_user_mail) {
+      StatusCode
+      message
+      body
+    }
+  }
 `;
 
-export const GET_ADMIN_TRANSACTIONS= gql`
-query GetAdminTransactions($email: String!) {
-  get_transactions(email: $email){
-  StatusCode
-  body
-  message
-}
-}
+export const GET_ADMIN_MODULES = gql`
+  query GetAdminModules($email: String!) {
+    get_modules(email: $email) {
+      StatusCode
+      body
+      message
+    }
+  }
+`;
+
+export const GET_ADMIN_TRANSACTIONS = gql`
+  query GetAdminTransactions($email: String!) {
+    get_transactions(email: $email) {
+      StatusCode
+      body
+      message
+    }
+  }
 `;
 
 export const GET_ADMIN_COMPANIES = gql`
