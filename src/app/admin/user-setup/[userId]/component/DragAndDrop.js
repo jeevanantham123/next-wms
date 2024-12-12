@@ -1,110 +1,122 @@
 import { Cross2Icon, PlusIcon } from "@radix-ui/react-icons";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
-const DragDropComponent = ({ dropItems, title }) => {
-  // Initialize state for the list of items and the assigned items
+const DragDropComponent = ({
+  dropItems,
+  title,
+  assignedItems,
+  setAssignedItems,
+  allowedKey,
+}) => {
   const [items, setItems] = useState(dropItems);
-  const [assignedItems, setAssignedItems] = useState([]);
 
-  // Handle drag start by passing item data
-  const handleDragStart = (e, item) => {
+  // Sync items state with dropItems prop
+  useEffect(() => {
+    setItems(dropItems);
+  }, [dropItems]);
+
+  // Handlers
+  const handleDragStart = useCallback((e, item) => {
     e.dataTransfer.setData("item", JSON.stringify(item));
-  };
+  }, []);
 
-  // Handle drop on the right side, update assigned items and mark as assigned
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const item = JSON.parse(e.dataTransfer.getData("item"));
+  const handleDrop = useCallback(
+    (e) => {
+      e.preventDefault();
+      const item = JSON.parse(e.dataTransfer.getData("item"));
 
-    // Avoid re-adding the same item
-    if (assignedItems.find((assigned) => assigned.id === item.id)) return;
+      if (item["key"] != allowedKey) return;
 
-    setAssignedItems([...assignedItems, item]);
+      if (assignedItems.some((assigned) => assigned.id === item.id)) return;
 
-    // Update items to mark the dragged item as assigned
-    setItems(
-      items.map((i) => (i.id === item.id ? { ...i, assigned: true } : i))
-    );
-  };
+      setAssignedItems((prev) => [...prev, item]);
+      setItems((prev) =>
+        prev.map((i) => (i.id === item.id ? { ...i, assigned: true } : i))
+      );
+    },
+    [assignedItems, setAssignedItems]
+  );
 
   const handleClick = (item) => {
-    // Avoid re-adding the same item
-    if (assignedItems.find((assigned) => assigned.id === item.id)) return;
+    if (assignedItems.some((assigned) => assigned.id === item.id)) return;
 
-    setAssignedItems([...assignedItems, item]);
-
-    // Update items to mark the dragged item as assigned
-    setItems(
-      items.map((i) => (i.id === item.id ? { ...i, assigned: true } : i))
+    setAssignedItems((prev) => [...prev, item]);
+    setItems((prev) =>
+      prev.map((i) => (i.id === item.id ? { ...i, assigned: true } : i))
     );
   };
 
-  // Handle drag over event
   const handleDragOver = (e) => e.preventDefault();
 
-  // Handle removal of item from the assigned list
   const handleRemove = (item) => {
-    setAssignedItems(assignedItems.filter((i) => i.id !== item.id));
-    setItems(
-      items.map((i) => (i.id === item.id ? { ...i, assigned: false } : i))
+    setAssignedItems((prev) => prev.filter((i) => i.id !== item.id));
+    setItems((prev) =>
+      prev.map((i) => (i.id === item.id ? { ...i, assigned: false } : i))
     );
   };
 
   return (
     <div className="flex space-x-8">
-      {/* Left Side: List of Items */}
-      <div className="w-[250px] p-4 border shadow-md rounded-lg bg-white">
+      {/* Available Items */}
+      <div className="w-[240px] p-4 border shadow-md rounded-lg bg-white">
         <h3 className="text-[14px] font-semibold mb-4">{title} available</h3>
-        <div className="space-y-2">
-          {items.map((item) => (
-            <div
-              key={item.id}
-              draggable={!item.assigned}
-              onClick={() => handleClick(item)}
-              onDragStart={(e) => handleDragStart(e, item)}
-              className={`p-2 flex justify-between items-center text-[12px] rounded-lg cursor-pointer transition ${
-                item.assigned
-                  ? "bg-purple-200 text-theme"
-                  : "bg-theme/80 text-white"
-              }`}
-            >
-              {item.name} <PlusIcon />
-            </div>
-          ))}
-        </div>
+        <ScrollArea className="h-[150px]">
+          {items.length > 0 ? (
+            items.map((item) => (
+              <div
+                key={item.id}
+                draggable={!item.assigned}
+                onClick={() => handleClick(item)}
+                onDragStart={(e) => handleDragStart(e, item)}
+                className={`p-2 mb-[8px] flex justify-between items-center text-[12px] rounded-lg cursor-pointer transition ${
+                  item.assigned
+                    ? "bg-purple-200 text-theme"
+                    : "bg-theme/80 text-white"
+                }`}
+              >
+                {item.name} <PlusIcon />
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500 text-[12px]">
+              No available items to assign
+            </p>
+          )}
+        </ScrollArea>
       </div>
 
-      {/* Right Side: Drop Zone */}
+      {/* Assigned Items */}
       <div
-        className="w-[250px] bg-white shadow-md p-4 border-dashed border-2 border-purple-500 rounded-lg"
+        className="w-[240px] bg-white shadow-md p-4 border-dashed border-2 border-purple-500 rounded-lg"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
+        aria-dropeffect="move"
       >
         <h3 className="text-[14px] font-semibold mb-4">{title} assigned</h3>
-        <div className="flex items-center justify-center -mt-[30px] h-full">
+        <ScrollArea className="h-[150px]">
           {assignedItems.length > 0 ? (
-            <div className="flex gap-2 items-center flex-wrap">
-              {assignedItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex text-[12px] items-center max-h-[40px] p-2 rounded-lg bg-purple-100 text-purple-700"
+            assignedItems.map((item) => (
+              <div
+                key={item.id}
+                className="flex mb-[8px] text-[12px] justify-between items-center max-h-[40px] p-2 rounded-lg bg-purple-100 text-purple-700"
+              >
+                <span>{item.name}</span>
+                <button
+                  onClick={() => handleRemove(item)}
+                  className="ml-2 text-sm text-red-500 hover:text-red-700"
+                  aria-label={`Remove ${item.name}`}
                 >
-                  <span>{item.name}</span>
-                  <button
-                    onClick={() => handleRemove(item)}
-                    className="ml-2 text-sm text-red-500 hover:text-red-700"
-                  >
-                    <Cross2Icon className="text-theme" />
-                  </button>
-                </div>
-              ))}
-            </div>
+                  <Cross2Icon className="text-theme" />
+                </button>
+              </div>
+            ))
           ) : (
             <p className="text-gray-500 text-[12px] border border-dashed p-2 rounded-md">
               Drag items here to assign
             </p>
           )}
-        </div>
+        </ScrollArea>
       </div>
     </div>
   );

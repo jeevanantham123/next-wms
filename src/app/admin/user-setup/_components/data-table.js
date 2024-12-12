@@ -30,6 +30,7 @@ import DeleteUserModal from "./delete-user";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useAuthStore } from "@/store/auth";
 
 const ToggleStatus = ({ row, refetch }) => {
   const statusChange = useMutation({
@@ -85,13 +86,13 @@ export function UserDatatable({ data, refetch }) {
       accessorKey: "userName",
       header: "Username",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("userName")}</div>
+        <div className="">{row.original.username}</div>
       ),
     },
     {
       accessorKey: "email",
       header: "Email",
-      cell: ({ row }) => <div className="">{row.getValue("email")}</div>,
+      cell: ({ row }) => <div className="">{row.original.email}</div>,
     },
     {
       accessorKey: "permissions",
@@ -124,9 +125,13 @@ export function UserDatatable({ data, refetch }) {
         return (
           <div className="flex divide-x cursor-pointer">
             <div
-              onClick={() =>
-                router.push(`/admin/user-setup/${row.original.id}`)
+              onClick={async() =>{
+                await useAuthStore.setState({
+                  userEmail : row.original.email
+                });
+                router.push(`/admin/user-setup/${row.original.email}`)
               }
+            }
             >
               <Pencil1Icon className="h-[24px] w-[24px] mr-2" />
             </div>
