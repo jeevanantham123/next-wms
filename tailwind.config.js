@@ -13,10 +13,9 @@ module.exports = {
         padding: "1rem", // Default padding for all screen sizes
         screens: {
           sm: "100%", // Full width on small screens
-          md: "728px", // Medium screen
-          lg: "984px", // Large screen
+          md: "100%", // Medium screen
+          lg: "100%", // Large screen
           xl: "1330px", // Extra large screen
-          "2xl": "1440px", // 2X large screen
         },
       },
       backgroundImage: {
@@ -74,6 +73,12 @@ module.exports = {
           5: "hsl(var(--chart-5))",
         },
       },
+    },
+    screens: {
+      sm: "500px", // Modify existing `sm` breakpoint
+      md: "950px", // Modify `md`
+      lg: "1440px", // Keep `lg` unchanged
+      xl: "1600px", // Change `xl` to 1440px
     },
   },
   plugins: [require("tailwindcss-animate")],
